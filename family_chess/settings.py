@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-h6#-)yjjw-r=l!yp(ow)7d=13hyw+z5ucrl*w#a8zv0vy!hm(e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".ngrok-free.app", "localhost"]
+ALLOWED_HOSTS = [".ngrok-free.app", "localhost", "deyu.quee.org", "148.135.12.219"]
 
 
 # Application definition
@@ -61,6 +61,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -104,11 +105,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
 
 LANGUAGES = [
     ('en', 'English'),
-    ('zh-hans', 'Chinese'),
+    ('zh-hans', 'Chinese (Simplified)'),
 ]
 
 LOCALE_PATHS = [

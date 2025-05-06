@@ -52,7 +52,7 @@
     
     <div class="grid md:grid-cols-3 gap-6">
         <div class="md:col-span-2">
-            <div class="bg-white rounded-lg shadow p-4">
+            <div id="boardContainer" class="bg-white rounded-lg shadow p-4 transition-colors duration-300">
                 <div id="board" class="board-container"></div>
             </div>
         </div>
@@ -152,6 +152,14 @@
             ],
             preload: true,
             volume: 1.0
+        }),
+        yourTurn: new Howl({ 
+            src: [
+                '{% static "sound/your-turn.mp3" %}',
+                '{% static "sound/your-turn.ogg" %}'
+            ],
+            preload: true,
+            volume: 1.0
         })
     };
     
@@ -217,6 +225,11 @@
         }
     }
     
+    // Initialize turn indicator on game load
+    if (gameStarted) {
+        initializeTurnIndicator();
+    }
+    
     // Setup share button
     const shareBtn = document.getElementById('shareBtn');
     if (shareBtn) {
@@ -230,6 +243,19 @@
     
     // Initialize board and game
     let board = Chessboard('board', boardConfig);
+    
+    // Initialize turn indicator
+    function initializeTurnIndicator() {
+        if (!isSpectator && gameStarted) {
+            const currentTurn = chess.turn();
+            const isPlayerTurn = (currentTurn === 'w' && playerColor === 'white') || 
+                              (currentTurn === 'b' && playerColor === 'black');
+            
+            if (isPlayerTurn) {
+                $('#boardContainer').addClass('your-turn');
+            }
+        }
+    }
     
     // Extend the board object with a highlight method
     board.highlightSquare = function(square, color) {
@@ -262,6 +288,10 @@
                 }
                 .highlight-square {
                     background-color: rgba(255, 255, 0, 0.3) !important;
+                }
+                .your-turn {
+                    background-color: rgba(152, 251, 152, 0.3) !important;
+                    box-shadow: 0 0 8px 2px rgba(0, 200, 0, 0.5);
                 }
             `;
             document.head.appendChild(styleEl);
@@ -527,6 +557,9 @@
                     gameStarted = true;
                     sounds.start.play();
                     updateStatusText();
+                    
+                    // Initialize turn indicator as the game just started
+                    initializeTurnIndicator();
                 }
             } else {
                 // If there was an error, restore the button
@@ -550,6 +583,9 @@
     // Function to update game state from SSE
     function updateGameState(gameState) {
         console.log('Game state update:', gameState);
+        
+        // Get the previous turn before updating
+        const previousTurn = chess.turn();
         
         // Clear selection when board updates
         selectedSquare = null;
@@ -610,6 +646,35 @@
         
         // Reset overlay when board updates
         setupClickBasedMovement();
+        
+        // Update the turn indicator and potentially play a sound
+        updateTurnIndicator(previousTurn);
+    }
+    
+    // Function to update the turn indicator and play sound when it's the player's turn
+    function updateTurnIndicator(previousTurn) {
+        if (isSpectator || !gameStarted || gameOver) {
+            return;
+        }
+        
+        const $boardContainer = $('#boardContainer');
+        const currentTurn = chess.turn();
+        const isPlayerTurn = (currentTurn === 'w' && playerColor === 'white') || 
+                          (currentTurn === 'b' && playerColor === 'black');
+        
+        // Remove the highlight first
+        $boardContainer.removeClass('your-turn');
+        
+        // If it's the player's turn, add the highlight
+        if (isPlayerTurn) {
+            $boardContainer.addClass('your-turn');
+            
+            // If the turn has changed and it's now this player's turn
+            if (previousTurn && previousTurn !== currentTurn) {
+                // Play "your turn" sound
+                sounds.yourTurn.play();
+            }
+        }
     }
     
     // Function to highlight the last move on the board

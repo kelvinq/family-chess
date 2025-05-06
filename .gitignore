@@ -2,3 +2,7 @@
 user-requirements.md
 implementation-plan.md
 db.sqlite3
+# Ignore all .env files
+*.env
+# Ignore the directory  __pycache__ anywhere in the project
+__pycache__/

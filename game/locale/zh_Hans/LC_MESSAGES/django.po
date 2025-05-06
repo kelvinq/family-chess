@@ -51,7 +51,7 @@ msgstr "首页"
 
 #: game/templates/game/base.html:44
 msgid "Built for Deyu and LaoYe"
-msgstr ""
+msgstr "献给德于和老爷"
 
 #: game/templates/game/game_room.html:5
 msgid "Chess Game"

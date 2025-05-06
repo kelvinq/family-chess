@@ -43,8 +43,10 @@ def validate_move(fen, from_square, to_square, promotion=None):
     
     # Create a temporary JavaScript file with our validation code
     chess_js_path = str(Path.cwd() / 'static' / 'js' / 'chess-node-bridge.js')
+    # First replace backslashes in the path, then format the string
+    safe_path = chess_js_path.replace('\\', '/')
     js_code = f"""
-    const {{ Chess }} = require('{chess_js_path.replace('\\', '\\\\')}');
+    const {{ Chess }} = require('{safe_path}');
     
     // Initialize chess instance with given FEN
     const chess = new Chess('{fen}');
@@ -401,8 +403,10 @@ def get_game_status(fen):
     
     # Similar to validate_move but just checks game state
     chess_js_path = str(Path.cwd() / 'static' / 'js' / 'chess-node-bridge.js')
+    # First replace backslashes in the path, then format the string
+    safe_path = chess_js_path.replace('\\', '/')
     js_code = f"""
-    const {{ Chess }} = require('{chess_js_path.replace('\\', '\\\\')}');
+    const {{ Chess }} = require('{safe_path}');
     
     // Initialize chess instance with given FEN
     const chess = new Chess('{fen}');
