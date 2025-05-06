@@ -1,0 +1,253 @@
+# Chinese translations for family-chess.
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-06 12:16+0800\n"
+"PO-Revision-Date: 2025-05-06 12:00+0000\n"
+"Last-Translator: Translator <translator@example.com>\n"
+"Language-Team: Chinese\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: game/models.py:23
+#, fuzzy
+#| msgid "Waiting for players..."
+msgid "Waiting for players"
+msgstr "等待玩家..."
+
+#: game/models.py:24
+#, fuzzy
+#| msgid "Game in progress..."
+msgid "Game in progress"
+msgstr "游戏进行中..."
+
+#: game/models.py:25
+msgid "Checkmate"
+msgstr ""
+
+#: game/models.py:26
+msgid "Stalemate"
+msgstr ""
+
+#: game/models.py:27
+msgid "Draw"
+msgstr ""
+
+#: game/models.py:28 game/templates/game/game_room.html:709
+msgid "Game abandoned"
+msgstr "游戏已放弃"
+
+#: game/templates/game/base.html:8 game/templates/game/base.html:33
+msgid "Family Chess"
+msgstr "家庭象棋"
+
+#: game/templates/game/base.html:35
+msgid "Home"
+msgstr "首页"
+
+#: game/templates/game/base.html:44
+msgid "Built for Deyu and LaoYe"
+msgstr ""
+
+#: game/templates/game/game_room.html:5
+msgid "Chess Game"
+msgstr "国际象棋游戏"
+
+#: game/templates/game/game_room.html:10
+msgid "Game"
+msgstr "游戏"
+
+#: game/templates/game/game_room.html:13
+msgid "Share Link"
+msgstr "分享链接"
+
+#: game/templates/game/game_room.html:16
+msgid "Spectators"
+msgstr "观众"
+
+#: game/templates/game/game_room.html:23
+msgid "Choose Your Color"
+msgstr "选择你的颜色"
+
+#: game/templates/game/game_room.html:26 game/templates/game/game_room.html:44
+#: game/templates/game/game_room.html:70 game/templates/game/game_room.html:477
+#: game/templates/game/game_room.html:598
+#: game/templates/game/game_room.html:696
+msgid "White"
+msgstr "白方"
+
+#: game/templates/game/game_room.html:29 game/templates/game/game_room.html:46
+#: game/templates/game/game_room.html:80 game/templates/game/game_room.html:477
+#: game/templates/game/game_room.html:602
+#: game/templates/game/game_room.html:696
+msgid "Black"
+msgstr "黑方"
+
+#: game/templates/game/game_room.html:35 game/templates/game/game_room.html:473
+msgid "Your Color"
+msgstr "你的颜色"
+
+#: game/templates/game/game_room.html:63
+msgid "Game Status"
+msgstr "游戏状态"
+
+#: game/templates/game/game_room.html:64
+msgid "Waiting for players..."
+msgstr "等待玩家..."
+
+#: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
+#: game/templates/game/game_room.html:598
+#: game/templates/game/game_room.html:602
+msgid "Ready"
+msgstr "准备好了"
+
+#: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
+msgid "Not Ready"
+msgstr "未准备好"
+
+#: game/templates/game/game_room.html:74 game/templates/game/game_room.html:84
+msgid "Waiting"
+msgstr "等待中"
+
+#: game/templates/game/game_room.html:93 game/templates/game/game_room.html:536
+#: game/templates/game/game_room.html:545
+msgid "I am Ready"
+msgstr "我准备好了"
+
+#: game/templates/game/game_room.html:98
+msgid "You are watching as a spectator"
+msgstr "你正在以观众身份观看"
+
+#: game/templates/game/game_room.html:212
+#: game/templates/game/game_room.html:514
+msgid "Ready!"
+msgstr "已准备好！"
+
+#: game/templates/game/game_room.html:226
+msgid "Game link copied to clipboard!"
+msgstr "游戏链接已复制到剪贴板！"
+
+#: game/templates/game/game_room.html:637
+msgid "White wins by checkmate!"
+msgstr "白方将死获胜！"
+
+#: game/templates/game/game_room.html:639
+msgid "Black wins by checkmate!"
+msgstr "黑方将死获胜！"
+
+#: game/templates/game/game_room.html:641
+#: game/templates/game/game_room.html:705
+msgid "Game ends in a draw!"
+msgstr "游戏以平局结束！"
+
+#: game/templates/game/game_room.html:643
+#: game/templates/game/game_room.html:701
+msgid "Game ends in stalemate!"
+msgstr "游戏以僵局结束！"
+
+#: game/templates/game/game_room.html:663
+#: game/templates/game/game_room.html:673
+msgid "Waiting for players to be ready..."
+msgstr "等待玩家准备好..."
+
+#: game/templates/game/game_room.html:665
+msgid "Game in progress..."
+msgstr "游戏进行中..."
+
+#: game/templates/game/game_room.html:681
+msgid "White to move"
+msgstr "白方走棋"
+
+#: game/templates/game/game_room.html:683
+msgid "Black to move"
+msgstr "黑方走棋"
+
+#: game/templates/game/game_room.html:688
+msgid "CHECK!"
+msgstr "将军！"
+
+#: game/templates/game/game_room.html:697
+msgid "wins by checkmate!"
+msgstr "将死获胜！"
+
+#: game/templates/game/game_room.html:713
+msgid "Game over"
+msgstr "游戏结束"
+
+#: game/templates/game/home.html:8
+msgid "Welcome to Family Chess"
+msgstr "欢迎来到家庭象棋"
+
+#: game/templates/game/home.html:9
+msgid "Play chess with friends and family - no login required!"
+msgstr "与朋友和家人一起下棋 - 无需登录！"
+
+#: game/templates/game/home.html:13
+msgid "Create New Game"
+msgstr "创建新游戏"
+
+#: game/templates/game/home.html:18
+msgid "How to Play"
+msgstr "如何玩"
+
+#: game/templates/game/home.html:20
+msgid "Create a new game to get a unique link"
+msgstr "创建新游戏获取唯一链接"
+
+#: game/templates/game/home.html:21
+msgid "Share the link with another player"
+msgstr "与另一位玩家分享链接"
+
+#: game/templates/game/home.html:22
+msgid "The first player can choose their color"
+msgstr "第一位玩家可以选择棋子颜色"
+
+#: game/templates/game/home.html:23
+msgid "Both players must click 'Start' to begin the game"
+msgstr "两位玩家都必须点击'开始'才能开始游戏"
+
+#: game/templates/game/home.html:24
+msgid "Anyone else who opens the link will be a spectator"
+msgstr "其他打开链接的人将成为观众"
+
+#: game/views.py:80
+msgid "A player has already chosen a color"
+msgstr "已有玩家选择了一种颜色"
+
+#: game/views.py:94
+msgid "Invalid color choice"
+msgstr "无效的颜色选择"
+
+#: game/views.py:110
+msgid "You are not a player in this game"
+msgstr "你不是这个游戏的玩家"
+
+#: game/views.py:186
+msgid "Not your turn"
+msgstr "不是你的回合"
+
+#: game/views.py:190
+msgid "Game is not active"
+msgstr "游戏尚未激活"
+
+#: game/views.py:211
+msgid "Invalid move"
+msgstr "无效的移动"
+
+#: game/views.py:241
+msgid "Invalid request format"
+msgstr ""
+
+#: game/views.py:244
+msgid "Server error"
+msgstr ""
+
+#~ msgid "Built with Django, Chess.js & Chessboard.js"
+#~ msgstr "使用 Django, Chess.js 和 Chessboard.js 构建"
+
+#~ msgid "Both colors are already taken"
+#~ msgstr "两种颜色都已被选择"

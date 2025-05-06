@@ -1,0 +1,247 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-05-06 12:17+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: game/models.py:23
+msgid "Waiting for players"
+msgstr ""
+
+#: game/models.py:24
+msgid "Game in progress"
+msgstr ""
+
+#: game/models.py:25
+msgid "Checkmate"
+msgstr ""
+
+#: game/models.py:26
+msgid "Stalemate"
+msgstr ""
+
+#: game/models.py:27
+msgid "Draw"
+msgstr ""
+
+#: game/models.py:28 game/templates/game/game_room.html:709
+msgid "Game abandoned"
+msgstr ""
+
+#: game/templates/game/base.html:8 game/templates/game/base.html:33
+msgid "Family Chess"
+msgstr ""
+
+#: game/templates/game/base.html:35
+msgid "Home"
+msgstr ""
+
+#: game/templates/game/base.html:44
+msgid "Built for Deyu and LaoYe"
+msgstr ""
+
+#: game/templates/game/game_room.html:5
+msgid "Chess Game"
+msgstr ""
+
+#: game/templates/game/game_room.html:10
+msgid "Game"
+msgstr ""
+
+#: game/templates/game/game_room.html:13
+msgid "Share Link"
+msgstr ""
+
+#: game/templates/game/game_room.html:16
+msgid "Spectators"
+msgstr ""
+
+#: game/templates/game/game_room.html:23
+msgid "Choose Your Color"
+msgstr ""
+
+#: game/templates/game/game_room.html:26 game/templates/game/game_room.html:44
+#: game/templates/game/game_room.html:70 game/templates/game/game_room.html:477
+#: game/templates/game/game_room.html:598
+#: game/templates/game/game_room.html:696
+msgid "White"
+msgstr ""
+
+#: game/templates/game/game_room.html:29 game/templates/game/game_room.html:46
+#: game/templates/game/game_room.html:80 game/templates/game/game_room.html:477
+#: game/templates/game/game_room.html:602
+#: game/templates/game/game_room.html:696
+msgid "Black"
+msgstr ""
+
+#: game/templates/game/game_room.html:35 game/templates/game/game_room.html:473
+msgid "Your Color"
+msgstr ""
+
+#: game/templates/game/game_room.html:63
+msgid "Game Status"
+msgstr ""
+
+#: game/templates/game/game_room.html:64
+msgid "Waiting for players..."
+msgstr ""
+
+#: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
+#: game/templates/game/game_room.html:598
+#: game/templates/game/game_room.html:602
+msgid "Ready"
+msgstr ""
+
+#: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
+msgid "Not Ready"
+msgstr ""
+
+#: game/templates/game/game_room.html:74 game/templates/game/game_room.html:84
+msgid "Waiting"
+msgstr ""
+
+#: game/templates/game/game_room.html:93 game/templates/game/game_room.html:536
+#: game/templates/game/game_room.html:545
+msgid "I am Ready"
+msgstr ""
+
+#: game/templates/game/game_room.html:98
+msgid "You are watching as a spectator"
+msgstr ""
+
+#: game/templates/game/game_room.html:212
+#: game/templates/game/game_room.html:514
+msgid "Ready!"
+msgstr ""
+
+#: game/templates/game/game_room.html:226
+msgid "Game link copied to clipboard!"
+msgstr ""
+
+#: game/templates/game/game_room.html:637
+msgid "White wins by checkmate!"
+msgstr ""
+
+#: game/templates/game/game_room.html:639
+msgid "Black wins by checkmate!"
+msgstr ""
+
+#: game/templates/game/game_room.html:641
+#: game/templates/game/game_room.html:705
+msgid "Game ends in a draw!"
+msgstr ""
+
+#: game/templates/game/game_room.html:643
+#: game/templates/game/game_room.html:701
+msgid "Game ends in stalemate!"
+msgstr ""
+
+#: game/templates/game/game_room.html:663
+#: game/templates/game/game_room.html:673
+msgid "Waiting for players to be ready..."
+msgstr ""
+
+#: game/templates/game/game_room.html:665
+msgid "Game in progress..."
+msgstr ""
+
+#: game/templates/game/game_room.html:681
+msgid "White to move"
+msgstr ""
+
+#: game/templates/game/game_room.html:683
+msgid "Black to move"
+msgstr ""
+
+#: game/templates/game/game_room.html:688
+msgid "CHECK!"
+msgstr ""
+
+#: game/templates/game/game_room.html:697
+msgid "wins by checkmate!"
+msgstr ""
+
+#: game/templates/game/game_room.html:713
+msgid "Game over"
+msgstr ""
+
+#: game/templates/game/home.html:8
+msgid "Welcome to Family Chess"
+msgstr ""
+
+#: game/templates/game/home.html:9
+msgid "Play chess with friends and family - no login required!"
+msgstr ""
+
+#: game/templates/game/home.html:13
+msgid "Create New Game"
+msgstr ""
+
+#: game/templates/game/home.html:18
+msgid "How to Play"
+msgstr ""
+
+#: game/templates/game/home.html:20
+msgid "Create a new game to get a unique link"
+msgstr ""
+
+#: game/templates/game/home.html:21
+msgid "Share the link with another player"
+msgstr ""
+
+#: game/templates/game/home.html:22
+msgid "The first player can choose their color"
+msgstr ""
+
+#: game/templates/game/home.html:23
+msgid "Both players must click 'Start' to begin the game"
+msgstr ""
+
+#: game/templates/game/home.html:24
+msgid "Anyone else who opens the link will be a spectator"
+msgstr ""
+
+#: game/views.py:80
+msgid "A player has already chosen a color"
+msgstr ""
+
+#: game/views.py:94
+msgid "Invalid color choice"
+msgstr ""
+
+#: game/views.py:110
+msgid "You are not a player in this game"
+msgstr ""
+
+#: game/views.py:186
+msgid "Not your turn"
+msgstr ""
+
+#: game/views.py:190
+msgid "Game is not active"
+msgstr ""
+
+#: game/views.py:211
+msgid "Invalid move"
+msgstr ""
+
+#: game/views.py:241
+msgid "Invalid request format"
+msgstr ""
+
+#: game/views.py:244
+msgid "Server error"
+msgstr ""

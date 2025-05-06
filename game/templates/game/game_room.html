@@ -1,0 +1,826 @@
+{% extends 'game/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "Chess Game" %} #{{ game_id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-4 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-800">{% trans "Game" %} #{{ game_id }}</h2>
+        <div class="flex items-center">
+            <button id="shareBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mr-3">
+                {% trans "Share Link" %}
+            </button>
+            <span id="spectatorCount" class="text-gray-600">
+                {% trans "Spectators" %}: <span id="spectatorNum">{{ game.spectator_count }}</span>
+            </span>
+        </div>
+    </div>
+    
+    {% if can_choose_color %}
+    <div id="colorChoice" class="mb-6 p-4 bg-white rounded-lg shadow">
+        <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Choose Your Color" %}</h3>
+        <div class="flex justify-center space-x-4">
+            <button id="chooseWhite" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded">
+                {% trans "White" %}
+            </button>
+            <button id="chooseBlack" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded">
+                {% trans "Black" %}
+            </button>
+        </div>
+    </div>
+    {% elif player_color %}
+    <div id="playerColorInfo" class="mb-6 p-4 bg-white rounded-lg shadow">
+        <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Your Color" %}</h3>
+        <div class="flex justify-center space-x-4">
+            <div class="py-3 px-6 rounded 
+                {% if player_color == 'white' %}
+                    bg-gray-200 text-gray-800
+                {% else %}
+                    bg-gray-800 text-white
+                {% endif %}">
+                {% if player_color == 'white' %}
+                    {% trans "White" %}
+                {% else %}
+                    {% trans "Black" %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="md:col-span-2">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div id="board" class="board-container"></div>
+            </div>
+        </div>
+        
+        <div class="md:col-span-1">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div id="gameStatus" class="mb-4">
+                    <h3 class="font-medium text-gray-800 mb-2">{% trans "Game Status" %}</h3>
+                    <p id="statusText" class="text-gray-600">{% trans "Waiting for players..." %}</p>
+                </div>
+                
+                <div id="playerInfo" class="mb-4">
+                    <div class="flex items-center mb-2">
+                        <div class="w-4 h-4 bg-white border border-gray-300 mr-2"></div>
+                        <span id="whitePlayerStatus">{% trans "White" %}: 
+                            {% if game.player_white %}
+                                {% if game.white_ready %}{% trans "Ready" %}{% else %}{% trans "Not Ready" %}{% endif %}
+                            {% else %}
+                                {% trans "Waiting" %}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-black border border-gray-300 mr-2"></div>
+                        <span id="blackPlayerStatus">{% trans "Black" %}: 
+                            {% if game.player_black %}
+                                {% if game.black_ready %}{% trans "Ready" %}{% else %}{% trans "Not Ready" %}{% endif %}
+                            {% else %}
+                                {% trans "Waiting" %}
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                {% if not is_spectator %}
+                <div id="gameControls" class="mt-6">
+                    <button id="readyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+                        {% trans "I am Ready" %}
+                    </button>
+                </div>
+                {% else %}
+                <div class="mt-6 p-3 bg-gray-100 rounded">
+                    <p class="text-gray-600 text-sm">{% trans "You are watching as a spectator" %}</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Game configuration
+    const gameId = "{{ game_id }}";
+    var playerColor = "{% if player_color %}{{ player_color }}{% else %}none{% endif %}";
+    const isSpectator = {% if is_spectator %}true{% else %}false{% endif %};
+    const canChooseColor = {% if can_choose_color %}true{% else %}false{% endif %};
+    
+    // Game state
+    let gameActive = false;
+    let gameStarted = "{{ game.status }}" === "active";
+    let gameOver = false;
+    let lastCheckState = false;
+    let chess = new Chess(); // Initialize chess.js
+    
+    // Sound effects - preload and configure
+    const sounds = {
+        move: new Howl({ 
+            src: [
+                '{% static "sound/move-self.mp3" %}',
+                '{% static "sound/move-self.ogg" %}'
+            ],
+            preload: true,
+            volume: 1.0
+        }),
+        capture: new Howl({ 
+            src: [
+                '{% static "sound/capture.mp3" %}',
+                '{% static "sound/capture.ogg" %}'
+            ],
+            preload: true,
+            volume: 1.0
+        }),
+        check: new Howl({ 
+            src: [
+                '{% static "sound/check.mp3" %}',
+                '{% static "sound/check.ogg" %}'
+            ],
+            preload: true,
+            volume: 1.0
+        }),
+        start: new Howl({ 
+            src: [
+                '{% static "sound/game-start.mp3" %}',
+                '{% static "sound/game-start.ogg" %}'
+            ],
+            preload: true,
+            volume: 1.0
+        })
+    };
+    
+    // Test sound after page load
+    window.addEventListener('load', function() {
+        // Debug helper to check if sound is working
+        console.log('Testing sound...');
+        setTimeout(() => {
+            try {
+                sounds.move.play();
+                console.log('Sound test complete');
+            } catch (e) {
+                console.error('Sound test failed:', e);
+            }
+        }, 2000);
+    });
+    
+    // Board configuration - will be set up after color selection
+    let boardConfig = {
+        position: 'start',
+        pieceTheme: function(piece) {
+            return '{% static "img/chesspieces/wikipedia/" %}' + piece + '.png';
+        },
+        draggable: false, // Disable dragging - we'll use click-based movement instead
+        orientation: '{% if player_color == "black" %}black{% else %}white{% endif %}'
+    };
+    
+    // Track the selected piece and square for click-based movement
+    let selectedSquare = null;
+    
+    // Handle color choice if first player
+    if (canChooseColor) {
+        const colorChoiceDiv = document.getElementById('colorChoice');
+        if (colorChoiceDiv) {
+            document.getElementById('chooseWhite').addEventListener('click', () => chooseColor('white'));
+            document.getElementById('chooseBlack').addEventListener('click', () => chooseColor('black'));
+        }
+    } else {
+        const colorChoiceDiv = document.getElementById('colorChoice');
+        if (colorChoiceDiv) {
+            colorChoiceDiv.classList.add('hidden');
+        }
+    }
+    
+    // Setup ready button
+    if (!isSpectator) {
+        const readyBtn = document.getElementById('readyBtn');
+        if (readyBtn) {
+            // Check if player has already marked themselves as ready
+            const playerIsReady = (playerColor === 'white' && {{ game.white_ready|lower }}) || 
+                                (playerColor === 'black' && {{ game.black_ready|lower }});
+            
+            if (playerIsReady) {
+                // Player already marked as ready
+                readyBtn.disabled = true;
+                readyBtn.classList.add('bg-gray-400');
+                readyBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                readyBtn.textContent = '{% trans "Ready!" %}';
+            } else {
+                // Player needs to mark as ready
+                readyBtn.addEventListener('click', markReady);
+            }
+        }
+    }
+    
+    // Setup share button
+    const shareBtn = document.getElementById('shareBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            const gameUrl = window.location.href;
+            navigator.clipboard.writeText(gameUrl).then(() => {
+                alert('{% trans "Game link copied to clipboard!" %}');
+            });
+        });
+    }
+    
+    // Initialize board and game
+    let board = Chessboard('board', boardConfig);
+    
+    // Extend the board object with a highlight method
+    board.highlightSquare = function(square, color) {
+        const $square = $('#board .square-' + square);
+        $square.css('background-color', color);
+    };
+    
+    // Add a method to clear all highlights
+    board.clearHighlights = function() {
+        $('.chess-square').css('background-color', '');
+        $('.highlight-square').removeClass('highlight-square');
+        $('.selected-square').removeClass('selected-square');
+        $('.highlight-move').removeClass('highlight-move');
+    };
+    
+    // Add click-based movement for better mobile experience
+    function setupClickBasedMovement() {
+        console.log("Setting up direct square click handlers");
+        
+        // Add styles for highlighting
+        if (!document.getElementById('selection-styles')) {
+            const styleEl = document.createElement('style');
+            styleEl.id = 'selection-styles';
+            styleEl.textContent = `
+                .selected-square {
+                    background-color: rgba(0, 128, 255, 0.3) !important;
+                }
+                .highlight-move {
+                    background-color: rgba(0, 255, 0, 0.3) !important;
+                }
+                .highlight-square {
+                    background-color: rgba(255, 255, 0, 0.3) !important;
+                }
+            `;
+            document.head.appendChild(styleEl);
+        }
+        
+        // Much simpler approach: directly use chessboard's squares
+        // Remove any existing click handler
+        $('#board .square-55d63').off('click');
+        
+        // Add click handler to all squares
+        $('#board .square-55d63').on('click', function() {
+            // Get the square from the class name
+            const squareClasses = $(this).attr('class').split(' ');
+            let square = null;
+            
+            // Find the square class (format: square-a1, square-h8, etc.)
+            for (const cls of squareClasses) {
+                if (cls.startsWith('square-') && cls !== 'square-55d63') {
+                    square = cls.substring(7); // Remove 'square-' prefix
+                    break;
+                }
+            }
+            
+            // If no square found in class, try to derive from position
+            if (!square) {
+                // This is a fallback in case we can't find the square in the class
+                const squareElement = $(this);
+                const board = $('#board');
+                const isFlipped = board.hasClass('flipped');
+                
+                // Calculate relative position
+                const offsetX = squareElement.position().left;
+                const offsetY = squareElement.position().top;
+                const boardWidth = board.width();
+                const boardHeight = board.height();
+                
+                // Convert to file and rank (0-7)
+                const fileIdx = Math.floor(offsetX / (boardWidth / 8));
+                const rankIdx = Math.floor(offsetY / (boardHeight / 8));
+                
+                // Adjust for board orientation
+                const adjustedFileIdx = isFlipped ? 7 - fileIdx : fileIdx;
+                const adjustedRankIdx = isFlipped ? rankIdx : 7 - rankIdx;
+                
+                // Convert to algebraic notation
+                const file = String.fromCharCode(97 + adjustedFileIdx); // 'a' to 'h'
+                const rank = 8 - adjustedRankIdx; // 1 to 8
+                square = file + rank;
+            }
+            
+            console.log('Square clicked:', square);
+            
+            // Process the click
+            handleSquareClick(square);
+        });
+        
+        // Handle square clicks - now takes square name directly
+        function handleSquareClick(square) {
+            // Only allow moves if the game is started and not over
+            if (!gameStarted || gameOver || isSpectator) {
+                console.log('Move not allowed - game state:', { gameStarted, gameOver, isSpectator });
+                return;
+            }
+            
+            // If no square is selected yet
+            if (selectedSquare === null) {
+                // Check if there's a piece on this square
+                const pieceType = chess.get(square);
+                
+                if (pieceType) {
+                    const pieceColor = pieceType.color;
+                    console.log('Piece:', pieceType, 'Color:', pieceColor);
+                    
+                    const isPlayerPiece = (pieceColor === 'w' && playerColor === 'white') || 
+                                          (pieceColor === 'b' && playerColor === 'black');
+                    
+                    // Check if it's this player's turn
+                    const currentTurn = chess.turn();
+                    const isPlayerTurn = (currentTurn === 'w' && playerColor === 'white') || 
+                                         (currentTurn === 'b' && playerColor === 'black');
+                    
+                    console.log('Player piece?', isPlayerPiece, 'Player turn?', isPlayerTurn);
+                    
+                    if (isPlayerPiece && isPlayerTurn) {
+                        // Select the square
+                        selectedSquare = square;
+                        
+                        // Highlight the selected square - uses board's internal squares
+                        $('.selected-square').removeClass('selected-square');
+                        $(`#board .square-${square}`).addClass('selected-square');
+                        
+                        // Highlight possible moves
+                        highlightPossibleMoves(square);
+                        console.log('Square selected:', square);
+                    } else {
+                        console.log('Cannot select this piece - not your piece or not your turn');
+                    }
+                } else {
+                    console.log('No piece on this square');
+                }
+            } 
+            // If the same square is selected, deselect it
+            else if (selectedSquare === square) {
+                console.log('Deselecting square:', square);
+                selectedSquare = null;
+                $('.selected-square').removeClass('selected-square');
+                $('.highlight-move').removeClass('highlight-move');
+            } 
+            // If a different square is selected, try to move
+            else {
+                console.log('Attempting move from', selectedSquare, 'to', square);
+                
+                // Attempt the move
+                const fromSquare = selectedSquare;
+                makeClickMove(fromSquare, square)
+                    .then((successful) => {
+                        console.log('Move result:', successful ? 'success' : 'failed');
+                        // Reset selection state
+                        selectedSquare = null;
+                        $('.selected-square').removeClass('selected-square');
+                        $('.highlight-move').removeClass('highlight-move');
+                    });
+            }
+        }
+    }
+    
+    // Function to highlight possible moves for a piece
+    function highlightPossibleMoves(square) {
+        // Clear existing move highlights
+        $('.highlight-move').removeClass('highlight-move');
+        
+        // Get all legal moves for the piece
+        const moves = chess.moves({ square: square, verbose: true });
+        
+        // Highlight each possible destination using the actual chessboard squares
+        moves.forEach(move => {
+            $(`#board .square-${move.to}`).addClass('highlight-move');
+        });
+    }
+    
+    // Function to make a move when clicking
+    async function makeClickMove(from, to) {
+        // Check for pawn promotion
+        const piece = chess.get(from);
+        let promotion = null;
+        
+        if (piece && piece.type === 'p') {
+            const sourceRank = parseInt(from[1]);
+            const targetRank = parseInt(to[1]);
+            
+            // Check if pawn is moving to the last rank
+            if ((piece.color === 'w' && targetRank === 8) || 
+                (piece.color === 'b' && targetRank === 1)) {
+                promotion = await promptPromotion(piece.color);
+            }
+        }
+        
+        // Use the existing onDrop logic for the actual move
+        await handleMovement(from, to, promotion);
+    }
+    
+    // Setup click handlers after board is initialized
+    setupClickBasedMovement();
+    
+    // Setup event source for real-time updates
+    const evtSource = new EventSource(`/${gameId}/events/`);
+    evtSource.onmessage = function(event) {
+        const gameState = JSON.parse(event.data);
+        updateGameState(gameState);
+    };
+    
+    // Close event source when page is closed
+    window.addEventListener('beforeunload', () => {
+        evtSource.close();
+    });
+    
+    // Function to choose color
+    async function chooseColor(color) {
+        try {
+            // Store that we're making a selection so we don't try to make multiple
+            if (window.colorSelectionInProgress) {
+                return;
+            }
+            window.colorSelectionInProgress = true;
+            
+            const response = await fetch(`/${gameId}/choose_color/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ color: color })
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                // Update the player color
+                playerColor = result.color;
+                const colorChoiceDiv = document.getElementById('colorChoice');
+                if (colorChoiceDiv) {
+                    colorChoiceDiv.classList.add('hidden');
+                }
+                
+                // Add info about the chosen color
+                const playerColorInfoDiv = document.createElement('div');
+                playerColorInfoDiv.id = 'playerColorInfo';
+                playerColorInfoDiv.className = 'mb-6 p-4 bg-white rounded-lg shadow';
+                playerColorInfoDiv.innerHTML = `
+                    <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Your Color" %}</h3>
+                    <div class="flex justify-center space-x-4">
+                        <div class="py-3 px-6 rounded 
+                            ${color === 'white' ? 'bg-gray-200 text-gray-800' : 'bg-gray-800 text-white'}">
+                            ${color === 'white' ? '{% trans "White" %}' : '{% trans "Black" %}'}
+                        </div>
+                    </div>
+                `;
+                document.querySelector('.md\\:col-span-2').parentNode.insertBefore(
+                    playerColorInfoDiv, 
+                    document.querySelector('.md\\:col-span-2').parentNode.firstChild
+                );
+                
+                // Update board orientation
+                board.orientation(color);
+                isSpectator = false;
+                
+                // Update status
+                updateStatusText();
+                
+                // Reinitialize click handlers
+                setupClickBasedMovement();
+            }
+        } catch (error) {
+            console.error('Error choosing color:', error);
+        } finally {
+            // Reset the selection flag
+            window.colorSelectionInProgress = false;
+        }
+    }
+    
+    // Function to mark player as ready
+    async function markReady() {
+        if (isSpectator || !playerColor) return;
+        
+        try {
+            // Immediately update UI to prevent double-clicks
+            const readyBtn = document.getElementById('readyBtn');
+            readyBtn.disabled = true;
+            readyBtn.classList.add('bg-gray-400');
+            readyBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            readyBtn.textContent = '{% trans "Ready!" %}';
+            
+            const response = await fetch(`/${gameId}/ready/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                if (result.game_started) {
+                    gameStarted = true;
+                    sounds.start.play();
+                    updateStatusText();
+                }
+            } else {
+                // If there was an error, restore the button
+                readyBtn.disabled = false;
+                readyBtn.classList.remove('bg-gray-400');
+                readyBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                readyBtn.textContent = '{% trans "I am Ready" %}';
+                console.error('Failed to mark ready:', result.message);
+            }
+        } catch (error) {
+            // If there was an error, restore the button
+            const readyBtn = document.getElementById('readyBtn');
+            readyBtn.disabled = false;
+            readyBtn.classList.remove('bg-gray-400');
+            readyBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            readyBtn.textContent = '{% trans "I am Ready" %}';
+            console.error('Error marking ready:', error);
+        }
+    }
+    
+    // Function to update game state from SSE
+    function updateGameState(gameState) {
+        console.log('Game state update:', gameState);
+        
+        // Clear selection when board updates
+        selectedSquare = null;
+        $('.selected-square').removeClass('selected-square');
+        $('.highlight-move').removeClass('highlight-move');
+        
+        // Update board position
+        board.position(gameState.fen);
+        
+        // Update chess.js position
+        try {
+            chess.load(gameState.fen);
+        } catch (e) {
+            console.log('Invalid FEN:', e);
+        }
+        
+        // Game start logic
+        if (gameState.status === 'active' && !gameStarted) {
+            gameStarted = true;
+            sounds.start.play();
+        }
+        
+        // Highlight last move if available
+        if (gameState.last_move) {
+            const [from, to] = gameState.last_move.split('-');
+            highlightLastMove(from, to);
+        }
+        
+        // Check sound
+        if (gameState.in_check && lastCheckState !== gameState.in_check) {
+            sounds.check.play();
+        }
+        lastCheckState = gameState.in_check;
+        
+        // Game over logic
+        if (gameState.game_over && !gameOver) {
+            gameOver = true;
+            handleGameOver(gameState);
+        }
+        
+        // Update player ready states
+        const whiteStatus = document.getElementById('whitePlayerStatus');
+        const blackStatus = document.getElementById('blackPlayerStatus');
+        
+        if (gameState.white_ready) {
+            whiteStatus.innerHTML = '{% trans "White" %}: {% trans "Ready" %}';
+        }
+        
+        if (gameState.black_ready) {
+            blackStatus.innerHTML = '{% trans "Black" %}: {% trans "Ready" %}';
+        }
+        
+        // Update spectator count
+        document.getElementById('spectatorNum').textContent = gameState.spectators;
+        
+        // Update status text
+        updateStatusText(gameState);
+        
+        // Reset overlay when board updates
+        setupClickBasedMovement();
+    }
+    
+    // Function to highlight the last move on the board
+    function highlightLastMove(from, to) {
+        // Clear existing highlights
+        $('.highlight-square').removeClass('highlight-square');
+        
+        // Add new highlights if valid coordinates
+        if (from && to) {
+            $(`#board .square-${from}`).addClass('highlight-square');
+            $(`#board .square-${to}`).addClass('highlight-square');
+        }
+    }
+    
+    // Function to handle game over scenarios
+    function handleGameOver(gameState) {
+        // Play appropriate sound
+        if (gameState.status === 'checkmate') {
+            sounds.check.play();  // Checkmate sound
+        }
+        
+        // Display game result
+        let resultMessage = '';
+        if (gameState.result === 'white_win') {
+            resultMessage = '{% trans "White wins by checkmate!" %}';
+        } else if (gameState.result === 'black_win') {
+            resultMessage = '{% trans "Black wins by checkmate!" %}';
+        } else if (gameState.result === 'draw') {
+            resultMessage = '{% trans "Game ends in a draw!" %}';
+        } else if (gameState.status === 'stalemate') {
+            resultMessage = '{% trans "Game ends in stalemate!" %}';
+        }
+        
+        // Display the result message
+        if (resultMessage) {
+            const statusText = document.getElementById('statusText');
+            statusText.innerHTML = `<strong>${resultMessage}</strong>`;
+            
+            // Disable further moves
+            boardConfig.draggable = false;
+            board = Chessboard('board', boardConfig);
+        }
+    }
+    
+    // Function to update the status text
+    function updateStatusText(gameState) {
+        const statusText = document.getElementById('statusText');
+        
+        if (!gameState) {
+            if (!gameStarted) {
+                statusText.textContent = '{% trans "Waiting for players to be ready..." %}';
+            } else {
+                statusText.textContent = '{% trans "Game in progress..." %}';
+            }
+            return;
+        }
+        
+        // Handle different game states
+        switch(gameState.status) {
+            case 'waiting':
+                statusText.textContent = '{% trans "Waiting for players to be ready..." %}';
+                break;
+                
+            case 'active':
+                let statusMessage = '';
+                
+                // Show whose turn it is
+                if (gameState.turn === 'w') {
+                    statusMessage = '{% trans "White to move" %}';
+                } else {
+                    statusMessage = '{% trans "Black to move" %}';
+                }
+                
+                // Add check indicator
+                if (gameState.in_check) {
+                    statusMessage += ' — {% trans "CHECK!" %}';
+                }
+                
+                statusText.textContent = statusMessage;
+                break;
+                
+            case 'checkmate':
+                // Determine winner
+                let winner = gameState.turn === 'w' ? '{% trans "Black" %}' : '{% trans "White" %}';
+                statusText.innerHTML = `<strong>${winner} {% trans "wins by checkmate!" %}</strong>`;
+                break;
+                
+            case 'stalemate':
+                statusText.innerHTML = '<strong>{% trans "Game ends in stalemate!" %}</strong>';
+                break;
+                
+            case 'draw':
+                statusText.innerHTML = '<strong>{% trans "Game ends in a draw!" %}</strong>';
+                break;
+                
+            case 'abandoned':
+                statusText.textContent = '{% trans "Game abandoned" %}';
+                break;
+                
+            default:
+                statusText.textContent = '{% trans "Game over" %}';
+        }
+    }
+    
+    // Handle movement logic (common to both click and drag interfaces)
+    async function handleMovement(source, target, promotion = null) {
+        console.log('Move requested:', source, target, promotion ? `promotion: ${promotion}` : '');
+        
+        // Validate move conditions
+        if (isSpectator) {
+            console.log('Spectators cannot move pieces');
+            return false;
+        }
+        
+        if (!gameStarted) {
+            console.log('Game not started yet');
+            return false;
+        }
+        
+        if (gameOver) {
+            console.log('Game is already over');
+            return false;
+        }
+        
+        // Check if it's this player's turn
+        const currentTurn = chess.turn();
+        const isPlayerTurn = (currentTurn === 'w' && playerColor === 'white') || 
+                          (currentTurn === 'b' && playerColor === 'black');
+        
+        if (!isPlayerTurn) {
+            console.log('Not your turn');
+            return false;
+        }
+        
+        // Check if the move is legal according to chess.js
+        const move = chess.move({
+            from: source,
+            to: target,
+            promotion: promotion
+        });
+        
+        // If the move is not legal in chess.js, don't even try to send it to the server
+        if (!move) {
+            console.log('Illegal move according to chess.js');
+            return false;
+        }
+        
+        // Undo the move in chess.js - we'll let the server validate it properly
+        chess.undo();
+        
+        // Remember the current position to reset to if needed
+        const currentPosition = chess.fen();
+        
+        // Send the move to the server
+        try {
+            const moveData = { 
+                from: source, 
+                to: target 
+            };
+            
+            if (promotion) {
+                moveData.promotion = promotion;
+            }
+            
+            const response = await fetch(`/${gameId}/move/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(moveData)
+            });
+            
+            const result = await response.json();
+            console.log('Move result:', result);
+            
+            if (result.status !== 'ok') {
+                console.log('Move rejected:', result.message);
+                // Reset the board position
+                board.position(currentPosition);
+                return false;
+            }
+            
+            // Play appropriate sound based on move type
+            const moveInfo = result.move_info || {};
+            
+            if (moveInfo.captured) {
+                sounds.capture.play();
+                console.log('Capture sound played');
+            } else {
+                sounds.move.play();
+                console.log('Move sound played');
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error making move:', error);
+            // Reset the board position
+            board.position(currentPosition);
+            return false;
+        }
+    }
+    
+    // Function to prompt for pawn promotion piece
+    async function promptPromotion(color) {
+        return new Promise(resolve => {
+            // Default to queen if no selection made
+            // For Phase 2, we'll just auto-promote to queen
+            resolve('q');  // q = queen, r = rook, b = bishop, n = knight
+            
+            // In a more advanced implementation, you would show a UI to select the piece
+        });
+    }
+</script>
+{% endblock %}

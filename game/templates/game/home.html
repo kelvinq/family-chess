@@ -1,0 +1,30 @@
+{% extends 'game/base.html' %}
+{% load i18n %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+    <div class="p-8">
+        <div class="text-center">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">{% trans "Welcome to Family Chess" %}</h2>
+            <p class="text-gray-600 mb-6">{% trans "Play chess with friends and family - no login required!" %}</p>
+            
+            <div class="mt-8">
+                <a href="{% url 'create_game' %}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition duration-300">
+                    {% trans "Create New Game" %}
+                </a>
+            </div>
+            
+            <div class="mt-12">
+                <h3 class="text-xl font-medium text-gray-700 mb-3">{% trans "How to Play" %}</h3>
+                <ol class="text-left text-gray-600 list-decimal pl-5 space-y-2">
+                    <li>{% trans "Create a new game to get a unique link" %}</li>
+                    <li>{% trans "Share the link with another player" %}</li>
+                    <li>{% trans "The first player can choose their color" %}</li>
+                    <li>{% trans "Both players must click 'Start' to begin the game" %}</li>
+                    <li>{% trans "Anyone else who opens the link will be a spectator" %}</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
