@@ -7,7 +7,9 @@ import subprocess
 import tempfile
 import shutil
 import logging
+import os
 from pathlib import Path
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -41,12 +43,9 @@ def validate_move(fen, from_square, to_square, promotion=None):
     if not HAS_NODE:
         return _fallback_validate_move(fen, from_square, to_square, promotion)
     
-    # Create a temporary JavaScript file with our validation code
-    chess_js_path = str(Path.cwd() / 'static' / 'js' / 'chess-node-bridge.js')
-    # First replace backslashes in the path, then format the string
-    safe_path = chess_js_path.replace('\\', '/')
+    # Use relative path since we'll copy chess.js to the temp directory
     js_code = f"""
-    const {{ Chess }} = require('{safe_path}');
+    const {{ Chess }} = require('./chess.js');
     
     // Initialize chess instance with given FEN
     const chess = new Chess('{fen}');
@@ -103,16 +102,27 @@ def validate_move(fen, from_square, to_square, promotion=None):
     
     # Save the JavaScript to a temporary file
     js_file_path = None
+    temp_dir = None
     try:
-        with tempfile.NamedTemporaryFile(suffix='.js', mode='w', delete=False) as js_file:
+        # Create a temporary directory to store both the bridge script and a copy of chess.js
+        temp_dir = tempfile.mkdtemp()
+        
+        # Copy the original chess.js to the temp directory
+        chess_js_orig = str(Path(settings.BASE_DIR) / 'static' / 'js' / 'chess.js')
+        chess_js_temp = os.path.join(temp_dir, 'chess.js')
+        shutil.copy2(chess_js_orig, chess_js_temp)
+        
+        # Create the bridge file in the temp directory
+        js_file_path = os.path.join(temp_dir, 'temp_bridge.js')
+        with open(js_file_path, 'w') as js_file:
             js_file.write(js_code)
-            js_file_path = js_file.name
         
         # Execute the JavaScript file using Node.js
         output = subprocess.check_output(
             ['node', js_file_path], 
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=temp_dir
         )
         
         # Parse the JSON output
@@ -138,12 +148,12 @@ def validate_move(fen, from_square, to_square, promotion=None):
         logger.error(f"Unexpected error in validate_move: {e}")
         return _fallback_validate_move(fen, from_square, to_square, promotion)
     finally:
-        # Clean up temporary file
-        if js_file_path:
+        # Clean up temporary directory and files
+        if temp_dir and os.path.exists(temp_dir):
             try:
-                Path(js_file_path).unlink()
+                shutil.rmtree(temp_dir)
             except:
-                pass
+                logger.warning(f"Failed to remove temporary directory: {temp_dir}")
 
 def _fallback_validate_move(fen, from_square, to_square, promotion=None):
     """
@@ -385,8 +395,6 @@ def _apply_move_to_position(position, from_square, to_square, promotion=None):
     
     return '/'.join(new_position)
 
-# Removed duplicate _get_piece_color_at method
-
 def get_game_status(fen):
     """
     Get the current game status from a FEN string.
@@ -401,12 +409,9 @@ def get_game_status(fen):
     if not HAS_NODE:
         return _fallback_get_game_status(fen)
     
-    # Similar to validate_move but just checks game state
-    chess_js_path = str(Path.cwd() / 'static' / 'js' / 'chess-node-bridge.js')
-    # First replace backslashes in the path, then format the string
-    safe_path = chess_js_path.replace('\\', '/')
+    # Use relative path since we'll copy chess.js to the temp directory
     js_code = f"""
-    const {{ Chess }} = require('{safe_path}');
+    const {{ Chess }} = require('./chess.js');
     
     // Initialize chess instance with given FEN
     const chess = new Chess('{fen}');
@@ -427,16 +432,27 @@ def get_game_status(fen):
     
     # Save the JavaScript to a temporary file
     js_file_path = None
+    temp_dir = None
     try:
-        with tempfile.NamedTemporaryFile(suffix='.js', mode='w', delete=False) as js_file:
+        # Create a temporary directory to store both the bridge script and a copy of chess.js
+        temp_dir = tempfile.mkdtemp()
+        
+        # Copy the original chess.js to the temp directory
+        chess_js_orig = str(Path(settings.BASE_DIR) / 'static' / 'js' / 'chess.js')
+        chess_js_temp = os.path.join(temp_dir, 'chess.js')
+        shutil.copy2(chess_js_orig, chess_js_temp)
+        
+        # Create the bridge file in the temp directory
+        js_file_path = os.path.join(temp_dir, 'temp_bridge.js')
+        with open(js_file_path, 'w') as js_file:
             js_file.write(js_code)
-            js_file_path = js_file.name
         
         # Execute the JavaScript file using Node.js
         output = subprocess.check_output(
             ['node', js_file_path], 
             stderr=subprocess.STDOUT,
-            universal_newlines=True
+            universal_newlines=True,
+            cwd=temp_dir
         )
         
         # Parse the JSON output
@@ -446,12 +462,12 @@ def get_game_status(fen):
         logger.error(f"Error in get_game_status: {str(e)}")
         return _fallback_get_game_status(fen)
     finally:
-        # Clean up temporary file
-        if js_file_path:
+        # Clean up temporary directory and files
+        if temp_dir and os.path.exists(temp_dir):
             try:
-                Path(js_file_path).unlink()
+                shutil.rmtree(temp_dir)
             except:
-                pass
+                logger.warning(f"Failed to remove temporary directory: {temp_dir}")
 
 def _fallback_get_game_status(fen):
     """Fallback game status checker for when Node.js is not available."""
