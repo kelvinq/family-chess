@@ -2,7 +2,7 @@
 Utility functions for chess game logic.
 """
 import logging
-from .chess_bridge import validate_move, get_game_status
+from .chess_engine import validate_move, get_game_status
 
 logger = logging.getLogger(__name__)
 

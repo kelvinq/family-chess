@@ -26,8 +26,9 @@ A real-time online chess game built with Django, designed specifically for users
 
 ### Backend Framework
 - **Django 5.2**: Server-side application framework
-- **SQLite**: Database for game state storage
-- **Server-Sent Events (SSE)**: Real-time game state updates
+- **python-chess**: Secure chess move validation and game logic
+- **SQLite**: Database for game state storage (PostgreSQL recommended for production)
+- **Server-Sent Events (SSE)**: Real-time game state updates with connection cleanup
 
 ## Installation
 
@@ -67,29 +68,52 @@ python manage.py migrate
 python manage.py compilemessages
 ```
 
-7. Run the development server
+7. Run tests (optional but recommended)
+```bash
+python manage.py test
+```
+
+8. Run the development server
 ```bash
 python manage.py runserver
 ```
 
 ## Production Deployment
 
+For production deployment, we provide an automated Apache setup. See `apache-deployment.md` for detailed instructions.
+
+### Quick Apache Deployment
+
 1. Update `.env` configuration:
-   - Set `DEBUG=False`
-   - Generate a secure random `SECRET_KEY`
+   - Set `DEBUG=False` 
+   - Generate a secure random `SECRET_KEY` (required - no default provided)
    - Configure `ALLOWED_HOSTS` with your domain
 
-2. Set up a reverse proxy (Nginx/Apache) with proper SSL configuration
+2. Run the automated deployment script:
+```bash
+sudo ./deploy-apache.sh
+```
 
-3. Configure static file serving:
+3. Obtain SSL certificates:
+```bash
+sudo certbot --apache -d your-domain.com
+```
+
+### Alternative WSGI Deployment
+
+For other WSGI servers like Gunicorn:
+
+1. Collect static files:
 ```bash
 python manage.py collectstatic
 ```
 
-4. Use a production-grade WSGI server (e.g., Gunicorn)
+2. Run with Gunicorn:
 ```bash
 gunicorn family_chess.wsgi:application
 ```
+
+**Note**: For production use, PostgreSQL is recommended over SQLite for better concurrent performance.
 
 ## Upcoming Features
 
@@ -101,6 +125,30 @@ The following features are planned for future releases:
 - **Game Timers**: Optional chess clocks for timed games
 - **Additional Themes**: More board and piece style options
 - **Performance Optimization**: Improved handling of concurrent users
+
+## Security Features
+
+- **CSRF Protection**: All POST endpoints protected with Django CSRF tokens
+- **Input Validation**: Chess moves validated using python-chess library
+- **Database Locking**: Atomic operations prevent race conditions
+- **Session Security**: Secure session handling with production-grade cookies
+- **Connection Limits**: SSE connections auto-timeout to prevent resource exhaustion
+- **Security Headers**: Comprehensive security headers in production configuration
+
+## Testing
+
+Run the comprehensive test suite:
+
+```bash
+python manage.py test
+```
+
+Tests cover:
+- Chess engine validation
+- Game model functionality
+- API endpoint security
+- Real-time features
+- Complete game workflows
 
 ## Browser Compatibility
 

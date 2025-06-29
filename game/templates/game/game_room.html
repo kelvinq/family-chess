@@ -18,33 +18,99 @@
         </div>
     </div>
     
-    {% if can_choose_color %}
+    <!-- State 1: Visitor - Can choose available colors -->
+    {% if user_state == 'visitor' and can_choose_color %}
     <div id="colorChoice" class="mb-6 p-4 bg-white rounded-lg shadow">
         <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Choose Your Color" %}</h3>
         <div class="flex justify-center space-x-4">
+            {% if 'white' in available_colors %}
             <button id="chooseWhite" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded">
                 {% trans "White" %}
             </button>
+            {% else %}
+            <button disabled class="bg-gray-100 text-gray-400 px-6 py-3 rounded cursor-not-allowed">
+                {% trans "White" %} ({% trans "Reserved" %})
+            </button>
+            {% endif %}
+            
+            {% if 'black' in available_colors %}
             <button id="chooseBlack" class="bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded">
                 {% trans "Black" %}
             </button>
+            {% else %}
+            <button disabled class="bg-gray-400 text-gray-300 px-6 py-3 rounded cursor-not-allowed">
+                {% trans "Black" %} ({% trans "Reserved" %})
+            </button>
+            {% endif %}
+        </div>
+        <div id="reservationStatus" class="mt-3 text-sm text-gray-600 text-center"></div>
+    </div>
+    
+    <!-- State 2: Color Reserved - Show timer and ready button -->
+    {% elif user_state == 'color_reserved' %}
+    <div id="colorReserved" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow">
+        <h3 class="text-lg font-medium text-blue-800 mb-3">
+            {% trans "Color Reserved" %}: 
+            <span class="font-bold">
+                {% if color_reserved == 'white' %}{% trans "White" %}{% else %}{% trans "Black" %}{% endif %}
+            </span>
+        </h3>
+        <div class="text-center mb-4">
+            <div id="reservationTimer" class="text-2xl font-mono text-blue-600 mb-2">
+                <span id="timerMinutes">{{ reservation_minutes }}</span>:<span id="timerSeconds">{{ reservation_seconds }}</span>
+            </div>
+            <p class="text-sm text-blue-600">{% trans "Reservation expires in" %}</p>
+        </div>
+        <div class="flex justify-center space-x-3">
+            <button id="readyBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-medium">
+                {% trans "I am Ready!" %}
+            </button>
+            <button id="cancelReservationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded">
+                {% trans "Cancel" %}
+            </button>
         </div>
     </div>
-    {% elif player_color %}
-    <div id="playerColorInfo" class="mb-6 p-4 bg-white rounded-lg shadow">
-        <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Your Color" %}</h3>
-        <div class="flex justify-center space-x-4">
-            <div class="py-3 px-6 rounded 
-                {% if player_color == 'white' %}
-                    bg-gray-200 text-gray-800
-                {% else %}
-                    bg-gray-800 text-white
-                {% endif %}">
-                {% if player_color == 'white' %}
-                    {% trans "White" %}
-                {% else %}
-                    {% trans "Black" %}
-                {% endif %}
+    
+    <!-- State 3: Player Ready - Show status -->
+    {% elif user_state == 'player_ready' %}
+    <div id="playerReady" class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg shadow">
+        <h3 class="text-lg font-medium text-green-800 mb-3">
+            {% trans "You are ready as" %} 
+            <span class="font-bold">
+                {% if player_color == 'white' %}{% trans "White" %}{% else %}{% trans "Black" %}{% endif %}
+            </span>
+        </h3>
+        <div class="text-center">
+            <div class="inline-flex items-center px-4 py-2 bg-green-100 rounded-full">
+                <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                <span class="text-green-700 font-medium">{% trans "Waiting for opponent..." %}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- State 4: Visitor waiting (no colors available) -->
+    {% elif user_state == 'visitor' and waiting_for_reservations %}
+    <div id="waitingForReservations" class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow">
+        <h3 class="text-lg font-medium text-yellow-800 mb-3">{% trans "Game Organizing" %}</h3>
+        <div class="text-center">
+            <div class="inline-flex items-center px-4 py-2 bg-yellow-100 rounded-full">
+                <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></div>
+                <span class="text-yellow-700">{% trans "Players are choosing colors..." %}</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- State 5: Spectator -->
+    {% elif user_state == 'spectator' %}
+    <div id="spectatorMode" class="mb-6 p-4 bg-gray-50 border border-gray-200 rounded-lg shadow">
+        <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Spectator Mode" %}</h3>
+        <div class="text-center">
+            <div class="inline-flex items-center px-4 py-2 bg-gray-100 rounded-full">
+                <svg class="w-4 h-4 text-gray-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">{% trans "Watching the game" %}</span>
             </div>
         </div>
     </div>
@@ -87,13 +153,7 @@
                     </div>
                 </div>
                 
-                {% if not is_spectator %}
-                <div id="gameControls" class="mt-6">
-                    <button id="readyBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
-                        {% trans "I am Ready" %}
-                    </button>
-                </div>
-                {% else %}
+                {% if is_spectator %}
                 <div class="mt-6 p-3 bg-gray-100 rounded">
                     <p class="text-gray-600 text-sm">{% trans "You are watching as a spectator" %}</p>
                 </div>
@@ -108,9 +168,16 @@
 <script>
     // Game configuration
     const gameId = "{{ game_id }}";
-    var playerColor = "{% if player_color %}{{ player_color }}{% else %}none{% endif %}";
+    let playerColor = "{% if player_color %}{{ player_color }}{% else %}none{% endif %}";
     const isSpectator = {% if is_spectator %}true{% else %}false{% endif %};
     const canChooseColor = {% if can_choose_color %}true{% else %}false{% endif %};
+    const csrfToken = "{{ csrf_token }}";
+    
+    // New reservation system state
+    let userState = "{{ user_state }}";
+    let colorReserved = "{% if color_reserved %}{{ color_reserved }}{% else %}none{% endif %}";
+    let reservationTimer = null;
+    let reservationExpiry = {% if reservation_expires_in %}{{ reservation_expires_in }}{% else %}0{% endif %};
     
     // Game state
     let gameActive = false;
@@ -190,39 +257,12 @@
     // Track the selected piece and square for click-based movement
     let selectedSquare = null;
     
-    // Handle color choice if first player
-    if (canChooseColor) {
-        const colorChoiceDiv = document.getElementById('colorChoice');
-        if (colorChoiceDiv) {
-            document.getElementById('chooseWhite').addEventListener('click', () => chooseColor('white'));
-            document.getElementById('chooseBlack').addEventListener('click', () => chooseColor('black'));
-        }
-    } else {
-        const colorChoiceDiv = document.getElementById('colorChoice');
-        if (colorChoiceDiv) {
-            colorChoiceDiv.classList.add('hidden');
-        }
-    }
+    // Initialize reservation system UI handlers
+    initializeReservationHandlers();
     
-    // Setup ready button
-    if (!isSpectator) {
-        const readyBtn = document.getElementById('readyBtn');
-        if (readyBtn) {
-            // Check if player has already marked themselves as ready
-            const playerIsReady = (playerColor === 'white' && {{ game.white_ready|lower }}) || 
-                                (playerColor === 'black' && {{ game.black_ready|lower }});
-            
-            if (playerIsReady) {
-                // Player already marked as ready
-                readyBtn.disabled = true;
-                readyBtn.classList.add('bg-gray-400');
-                readyBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                readyBtn.textContent = '{% trans "Ready!" %}';
-            } else {
-                // Player needs to mark as ready
-                readyBtn.addEventListener('click', markReady);
-            }
-        }
+    // Initialize countdown timer if user has a reservation
+    if (userState === 'color_reserved' && reservationExpiry > 0) {
+        startReservationCountdown(reservationExpiry);
     }
     
     // Initialize turn indicator on game load
@@ -235,10 +275,49 @@
     if (shareBtn) {
         shareBtn.addEventListener('click', () => {
             const gameUrl = window.location.href;
-            navigator.clipboard.writeText(gameUrl).then(() => {
-                alert('{% trans "Game link copied to clipboard!" %}');
-            });
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(gameUrl).then(() => {
+                    alert('{% trans "Game link copied to clipboard!" %}');
+                }).catch((err) => {
+                    console.error('Clipboard write failed:', err);
+                    fallbackCopyToClipboard(gameUrl);
+                });
+            } else {
+                // Fallback for older browsers or non-HTTPS
+                fallbackCopyToClipboard(gameUrl);
+            }
         });
+    }
+    
+    // Fallback clipboard function
+    function fallbackCopyToClipboard(text) {
+        // Create a temporary textarea element
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                alert('{% trans "Game link copied to clipboard!" %}');
+            } else {
+                // If copy failed, show the URL to user
+                prompt('{% trans "Copy this game link:" %}', text);
+            }
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            // Final fallback: show the URL to user
+            prompt('{% trans "Copy this game link:" %}', text);
+        } finally {
+            document.body.removeChild(textArea);
+        }
     }
     
     // Initialize board and game
@@ -468,7 +547,140 @@
         evtSource.close();
     });
     
-    // Function to choose color
+    // Initialize reservation system event handlers
+    function initializeReservationHandlers() {
+        // State 1: Color choice buttons (visitor state)
+        const chooseWhiteBtn = document.getElementById('chooseWhite');
+        const chooseBlackBtn = document.getElementById('chooseBlack');
+        
+        if (chooseWhiteBtn) {
+            chooseWhiteBtn.addEventListener('click', () => reserveColor('white'));
+        }
+        if (chooseBlackBtn) {
+            chooseBlackBtn.addEventListener('click', () => reserveColor('black'));
+        }
+        
+        // State 2: Ready and cancel buttons (color_reserved state)
+        const readyBtn = document.getElementById('readyBtn');
+        const cancelBtn = document.getElementById('cancelReservationBtn');
+        
+        if (readyBtn && userState === 'color_reserved') {
+            readyBtn.addEventListener('click', markReady);
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', cancelReservation);
+        }
+    }
+    
+    // Reserve a color (new reservation system)
+    async function reserveColor(color) {
+        try {
+            // Prevent multiple simultaneous requests
+            if (window.reservationInProgress) {
+                return;
+            }
+            window.reservationInProgress = true;
+            
+            const response = await fetch(`/${gameId}/reserve_color/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({ color: color })
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                // Update local state
+                userState = 'color_reserved';
+                colorReserved = result.color;
+                reservationExpiry = result.expires_in;
+                
+                // Hide color choice, show reservation UI
+                const colorChoiceDiv = document.getElementById('colorChoice');
+                if (colorChoiceDiv) {
+                    colorChoiceDiv.style.display = 'none';
+                }
+                
+                // Show reservation UI - reload page to get proper template state
+                window.location.reload();
+            } else {
+                alert(result.message || 'Failed to reserve color');
+            }
+        } catch (error) {
+            console.error('Error reserving color:', error);
+            alert('Error reserving color');
+        } finally {
+            window.reservationInProgress = false;
+        }
+    }
+    
+    // Cancel color reservation
+    async function cancelReservation() {
+        try {
+            const response = await fetch(`/${gameId}/cancel_reservation/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'ok') {
+                // Reload page to get updated state
+                window.location.reload();
+            } else {
+                alert(result.message || 'Failed to cancel reservation');
+            }
+        } catch (error) {
+            console.error('Error cancelling reservation:', error);
+            alert('Error cancelling reservation');
+        }
+    }
+    
+    // Start countdown timer for color reservation
+    function startReservationCountdown(secondsLeft) {
+        // Clear any existing timer
+        if (reservationTimer) {
+            clearInterval(reservationTimer);
+        }
+        
+        const timerMinutes = document.getElementById('timerMinutes');
+        const timerSeconds = document.getElementById('timerSeconds');
+        
+        if (!timerMinutes || !timerSeconds) {
+            return;
+        }
+        
+        function updateTimer() {
+            if (secondsLeft <= 0) {
+                // Reservation expired - reload page
+                clearInterval(reservationTimer);
+                window.location.reload();
+                return;
+            }
+            
+            const minutes = Math.floor(secondsLeft / 60);
+            const seconds = secondsLeft % 60;
+            
+            timerMinutes.textContent = minutes;
+            timerSeconds.textContent = seconds.toString().padStart(2, '0');
+            
+            secondsLeft--;
+        }
+        
+        // Update immediately
+        updateTimer();
+        
+        // Update every second
+        reservationTimer = setInterval(updateTimer, 1000);
+    }
+    
+    // Function to choose color (legacy - now redirects to reserve)
     async function chooseColor(color) {
         try {
             // Store that we're making a selection so we don't try to make multiple
@@ -481,6 +693,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
                 body: JSON.stringify({ color: color })
             });
@@ -496,9 +709,16 @@
                 }
                 
                 // Add info about the chosen color
-                const playerColorInfoDiv = document.createElement('div');
-                playerColorInfoDiv.id = 'playerColorInfo';
-                playerColorInfoDiv.className = 'mb-6 p-4 bg-white rounded-lg shadow';
+                let playerColorInfoDiv = document.getElementById('playerColorInfo');
+                if (!playerColorInfoDiv) {
+                    playerColorInfoDiv = document.createElement('div');
+                    playerColorInfoDiv.id = 'playerColorInfo';
+                    playerColorInfoDiv.className = 'mb-6 p-4 bg-white rounded-lg shadow';
+                    document.querySelector('.md\\:col-span-2').parentNode.insertBefore(
+                        playerColorInfoDiv, 
+                        document.querySelector('.md\\:col-span-2').parentNode.firstChild
+                    );
+                }
                 playerColorInfoDiv.innerHTML = `
                     <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Your Color" %}</h3>
                     <div class="flex justify-center space-x-4">
@@ -508,10 +728,6 @@
                         </div>
                     </div>
                 `;
-                document.querySelector('.md\\:col-span-2').parentNode.insertBefore(
-                    playerColorInfoDiv, 
-                    document.querySelector('.md\\:col-span-2').parentNode.firstChild
-                );
                 
                 // Update board orientation
                 board.orientation(color);
@@ -547,19 +763,37 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 }
             });
             
             const result = await response.json();
             
             if (result.status === 'ok') {
+                // Update player color after marking ready
+                if (colorReserved && colorReserved !== 'none') {
+                    playerColor = colorReserved;
+                    console.log('Player color set to:', playerColor);
+                }
+                
                 if (result.game_started) {
                     gameStarted = true;
                     sounds.start.play();
                     updateStatusText();
                     
+                    // Hide reservation UI and show game
+                    const colorReservedDiv = document.getElementById('colorReserved');
+                    if (colorReservedDiv) colorReservedDiv.style.display = 'none';
+                    
+                    // Update board orientation
+                    if (playerColor !== 'none') {
+                        board.orientation(playerColor);
+                    }
+                    
                     // Initialize turn indicator as the game just started
                     initializeTurnIndicator();
+                    
+                    console.log('Game started locally for player:', playerColor);
                 }
             } else {
                 // If there was an error, restore the button
@@ -602,10 +836,35 @@
             console.log('Invalid FEN:', e);
         }
         
+        // Update player information from SSE
+        if (gameState.players) {
+            // Determine current user's color from session context
+            // This will be handled by the initial page load context
+        }
+        
+        // Process reservation system updates
+        updateReservationUI(gameState);
+        
         // Game start logic
         if (gameState.status === 'active' && !gameStarted) {
             gameStarted = true;
             sounds.start.play();
+            
+            // Hide any reservation/ready UI when game starts
+            const colorChoiceDiv = document.getElementById('colorChoice');
+            const colorReservedDiv = document.getElementById('colorReserved');
+            const playerReadyDiv = document.getElementById('playerReady');
+            const waitingDiv = document.getElementById('waitingForReservations');
+            
+            if (colorChoiceDiv) colorChoiceDiv.style.display = 'none';
+            if (colorReservedDiv) colorReservedDiv.style.display = 'none';
+            if (playerReadyDiv) playerReadyDiv.style.display = 'none';
+            if (waitingDiv) waitingDiv.style.display = 'none';
+            
+            // Hide UI elements and enable game board
+            setupClickBasedMovement();
+            
+            console.log('Game started via SSE! Current player color:', playerColor);
         }
         
         // Highlight last move if available
@@ -649,6 +908,48 @@
         
         // Update the turn indicator and potentially play a sound
         updateTurnIndicator(previousTurn);
+    }
+    
+    // Update reservation system UI based on SSE data
+    function updateReservationUI(gameState) {
+        if (!gameState.reservations) return;
+        
+        // Update available color buttons
+        const chooseWhiteBtn = document.getElementById('chooseWhite');
+        const chooseBlackBtn = document.getElementById('chooseBlack');
+        
+        if (chooseWhiteBtn) {
+            const whiteAvailable = gameState.available_colors && gameState.available_colors.includes('white');
+            chooseWhiteBtn.disabled = !whiteAvailable;
+            if (!whiteAvailable) {
+                chooseWhiteBtn.classList.add('cursor-not-allowed', 'bg-gray-100', 'text-gray-400');
+                chooseWhiteBtn.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-800');
+            }
+        }
+        
+        if (chooseBlackBtn) {
+            const blackAvailable = gameState.available_colors && gameState.available_colors.includes('black');
+            chooseBlackBtn.disabled = !blackAvailable;
+            if (!blackAvailable) {
+                chooseBlackBtn.classList.add('cursor-not-allowed', 'bg-gray-400', 'text-gray-300');
+                chooseBlackBtn.classList.remove('bg-gray-800', 'hover:bg-gray-900', 'text-white');
+            }
+        }
+        
+        // Update reservation status display
+        const statusDiv = document.getElementById('reservationStatus');
+        if (statusDiv) {
+            let statusText = '';
+            if (gameState.reservations.white.reserved) {
+                const expires = Math.max(0, gameState.reservations.white.expires_in);
+                statusText += `White reserved (${Math.ceil(expires)}s remaining) `;
+            }
+            if (gameState.reservations.black.reserved) {
+                const expires = Math.max(0, gameState.reservations.black.expires_in);
+                statusText += `Black reserved (${Math.ceil(expires)}s remaining)`;
+            }
+            statusDiv.textContent = statusText;
+        }
     }
     
     // Function to update the turn indicator and play sound when it's the player's turn
@@ -843,6 +1144,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
                 },
                 body: JSON.stringify(moveData)
             });
