@@ -22,6 +22,14 @@
     {% if user_state == 'visitor' and can_choose_color %}
     <div id="colorChoice" class="mb-6 p-4 bg-white rounded-lg shadow">
         <h3 class="text-lg font-medium text-gray-800 mb-3">{% trans "Choose Your Color" %}</h3>
+        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <div class="flex items-center text-blue-700">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
+                </svg>
+                <span class="font-medium">{% trans "Share this link with your opponent to start playing!" %}</span>
+            </div>
+        </div>
         <div class="flex justify-center space-x-4">
             {% if 'white' in available_colors %}
             <button id="chooseWhite" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded">
@@ -55,6 +63,14 @@
                 {% if color_reserved == 'white' %}{% trans "White" %}{% else %}{% trans "Black" %}{% endif %}
             </span>
         </h3>
+        <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+            <div class="flex items-center text-green-700">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
+                </svg>
+                <span class="font-medium">{% trans "Share this link with your opponent, then click Ready!" %}</span>
+            </div>
+        </div>
         <div class="text-center mb-4">
             <div id="reservationTimer" class="text-2xl font-mono text-blue-600 mb-2">
                 <span id="timerMinutes">{{ reservation_minutes }}</span>:<span id="timerSeconds">{{ reservation_seconds }}</span>
@@ -83,7 +99,19 @@
         <div class="text-center">
             <div class="inline-flex items-center px-4 py-2 bg-green-100 rounded-full">
                 <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                <span class="text-green-700 font-medium">{% trans "Waiting for opponent..." %}</span>
+                <span class="text-green-700 font-medium">
+                    {% if player_color == 'white' %}
+                        {% trans "Waiting for Black player..." %}
+                    {% else %}
+                        {% trans "Waiting for White player..." %}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="mt-3 text-sm text-gray-600">
+                <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
+                </svg>
+                {% trans "Share the game link with your opponent" %}
             </div>
         </div>
     </div>
@@ -91,12 +119,15 @@
     <!-- State 4: Visitor waiting (no colors available) -->
     {% elif user_state == 'visitor' and waiting_for_reservations %}
     <div id="waitingForReservations" class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg shadow">
-        <h3 class="text-lg font-medium text-yellow-800 mb-3">{% trans "Game Organizing" %}</h3>
+        <h3 class="text-lg font-medium text-yellow-800 mb-3">{% trans "Game Setup in Progress" %}</h3>
         <div class="text-center">
             <div class="inline-flex items-center px-4 py-2 bg-yellow-100 rounded-full">
                 <div class="w-2 h-2 bg-yellow-500 rounded-full mr-2 animate-pulse"></div>
-                <span class="text-yellow-700">{% trans "Players are choosing colors..." %}</span>
+                <span class="text-yellow-700">{% trans "Both colors are reserved - waiting for players to confirm..." %}</span>
             </div>
+        </div>
+        <div class="mt-3 text-center text-sm text-yellow-600">
+            {% trans "You'll be able to spectate when the game starts" %}
         </div>
     </div>
     
@@ -268,6 +299,69 @@
     // Initialize turn indicator on game load
     if (gameStarted) {
         initializeTurnIndicator();
+    }
+    
+    // Function to dynamically show reservation UI without page reload
+    function showReservationUI(color, expiresIn) {
+        // Create reservation UI element
+        const reservationHTML = `
+            <div id="colorReserved" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-blue-800 mb-3">
+                    {% trans "Color Reserved" %}: 
+                    <span class="font-bold">
+                        ${color === 'white' ? '{% trans "White" %}' : '{% trans "Black" %}'}
+                    </span>
+                </h3>
+                <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded">
+                    <div class="flex items-center text-green-700">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
+                        </svg>
+                        <span class="font-medium">{% trans "Share this link with your opponent, then click Ready!" %}</span>
+                    </div>
+                </div>
+                <div class="text-center mb-4">
+                    <div id="reservationTimer" class="text-2xl font-mono text-blue-600 mb-2">
+                        <span id="timerMinutes">${Math.floor(expiresIn / 60)}</span>:<span id="timerSeconds">${String(expiresIn % 60).padStart(2, '0')}</span>
+                    </div>
+                    <p class="text-sm text-blue-600">{% trans "Reservation expires in" %}</p>
+                </div>
+                <div class="flex justify-center space-x-3">
+                    <button id="readyBtn" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded font-medium">
+                        {% trans "I am Ready!" %}
+                    </button>
+                    <button id="cancelReservationBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded">
+                        {% trans "Cancel" %}
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Insert after the existing div structure
+        const container = document.querySelector('.max-w-4xl');
+        const boardContainer = document.querySelector('.grid.md\\:grid-cols-3');
+        
+        // Create a temporary container to parse the HTML
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = reservationHTML;
+        const reservationDiv = tempDiv.firstElementChild;
+        
+        // Insert before the board container
+        container.insertBefore(reservationDiv, boardContainer);
+        
+        // Re-initialize event handlers for the new buttons
+        const readyBtn = document.getElementById('readyBtn');
+        const cancelBtn = document.getElementById('cancelReservationBtn');
+        
+        if (readyBtn) {
+            readyBtn.addEventListener('click', markReady);
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', cancelReservation);
+        }
+        
+        // Start the countdown timer
+        startReservationCountdown(expiresIn);
     }
     
     // Setup share button
@@ -598,14 +692,14 @@
                 colorReserved = result.color;
                 reservationExpiry = result.expires_in;
                 
-                // Hide color choice, show reservation UI
+                // Hide color choice div and show reservation UI without reloading
                 const colorChoiceDiv = document.getElementById('colorChoice');
                 if (colorChoiceDiv) {
                     colorChoiceDiv.style.display = 'none';
                 }
                 
-                // Show reservation UI - reload page to get proper template state
-                window.location.reload();
+                // Show reservation UI dynamically
+                showReservationUI(result.color, result.expires_in);
             } else {
                 alert(result.message || 'Failed to reserve color');
             }
@@ -631,8 +725,21 @@
             const result = await response.json();
             
             if (result.status === 'ok') {
-                // Reload page to get updated state
-                window.location.reload();
+                // Update state and UI without reloading
+                userState = 'visitor';
+                colorReserved = 'none';
+                
+                // Remove reservation UI
+                const reservationDiv = document.getElementById('colorReserved');
+                if (reservationDiv) {
+                    reservationDiv.remove();
+                }
+                
+                // Show color choice again if available
+                const colorChoiceDiv = document.getElementById('colorChoice');
+                if (colorChoiceDiv) {
+                    colorChoiceDiv.style.display = 'block';
+                }
             } else {
                 alert(result.message || 'Failed to cancel reservation');
             }
@@ -756,8 +863,14 @@
             const readyBtn = document.getElementById('readyBtn');
             readyBtn.disabled = true;
             readyBtn.classList.add('bg-gray-400');
-            readyBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
-            readyBtn.textContent = '{% trans "Ready!" %}';
+            readyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+            
+            // Show waiting message based on color
+            if (colorReserved === 'white') {
+                readyBtn.textContent = '{% trans "Waiting for Black player..." %}';
+            } else {
+                readyBtn.textContent = '{% trans "Waiting for White player..." %}';
+            }
             
             const response = await fetch(`/${gameId}/ready/`, {
                 method: 'POST',
@@ -785,9 +898,17 @@
                     const colorReservedDiv = document.getElementById('colorReserved');
                     if (colorReservedDiv) colorReservedDiv.style.display = 'none';
                     
-                    // Update board orientation
-                    if (playerColor !== 'none') {
+                    // Ensure player color is properly set and update board orientation
+                    if (playerColor !== 'none' && playerColor !== '') {
+                        console.log('Setting board orientation to:', playerColor);
                         board.orientation(playerColor);
+                    } else {
+                        console.log('Player color not set properly, using colorReserved:', colorReserved);
+                        // Fallback to colorReserved if playerColor isn't set
+                        if (colorReserved && colorReserved !== 'none') {
+                            playerColor = colorReserved;
+                            board.orientation(playerColor);
+                        }
                     }
                     
                     // Initialize turn indicator as the game just started
@@ -799,8 +920,8 @@
                 // If there was an error, restore the button
                 readyBtn.disabled = false;
                 readyBtn.classList.remove('bg-gray-400');
-                readyBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-                readyBtn.textContent = '{% trans "I am Ready" %}';
+                readyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                readyBtn.textContent = '{% trans "I am Ready!" %}';
                 console.error('Failed to mark ready:', result.message);
             }
         } catch (error) {
@@ -808,8 +929,8 @@
             const readyBtn = document.getElementById('readyBtn');
             readyBtn.disabled = false;
             readyBtn.classList.remove('bg-gray-400');
-            readyBtn.classList.add('bg-blue-600', 'hover:bg-blue-700');
-            readyBtn.textContent = '{% trans "I am Ready" %}';
+            readyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+            readyBtn.textContent = '{% trans "I am Ready!" %}';
             console.error('Error marking ready:', error);
         }
     }
@@ -860,6 +981,16 @@
             if (colorReservedDiv) colorReservedDiv.style.display = 'none';
             if (playerReadyDiv) playerReadyDiv.style.display = 'none';
             if (waitingDiv) waitingDiv.style.display = 'none';
+            
+            // Ensure board orientation is correct for the player
+            if (playerColor && playerColor !== 'none' && playerColor !== '') {
+                console.log('SSE Game start: Setting board orientation to:', playerColor);
+                board.orientation(playerColor);
+            } else if (colorReserved && colorReserved !== 'none') {
+                console.log('SSE Game start: Using colorReserved for orientation:', colorReserved);
+                playerColor = colorReserved;
+                board.orientation(playerColor);
+            }
             
             // Hide UI elements and enable game board
             setupClickBasedMovement();
@@ -1026,7 +1157,15 @@
         
         if (!gameState) {
             if (!gameStarted) {
-                statusText.textContent = '{% trans "Waiting for players to be ready..." %}';
+                if (userState === 'visitor' && can_choose_color) {
+                    statusText.textContent = '{% trans "Choose your color to join the game" %}';
+                } else if (userState === 'color_reserved') {
+                    statusText.textContent = '{% trans "Color reserved - click Ready to join" %}';
+                } else if (userState === 'player_ready') {
+                    statusText.textContent = '{% trans "Waiting for opponent to be ready..." %}';
+                } else {
+                    statusText.textContent = '{% trans "Waiting for players to join..." %}';
+                }
             } else {
                 statusText.textContent = '{% trans "Game in progress..." %}';
             }
@@ -1036,7 +1175,15 @@
         // Handle different game states
         switch(gameState.status) {
             case 'waiting':
-                statusText.textContent = '{% trans "Waiting for players to be ready..." %}';
+                if (gameState.players && gameState.players.both_ready) {
+                    statusText.textContent = '{% trans "Both players ready - starting game..." %}';
+                } else if (gameState.players && gameState.players.white_assigned && gameState.players.black_assigned) {
+                    statusText.textContent = '{% trans "Both players joined - waiting for ready confirmation..." %}';
+                } else if (gameState.players && (gameState.players.white_assigned || gameState.players.black_assigned)) {
+                    statusText.textContent = '{% trans "Waiting for second player to join..." %}';
+                } else {
+                    statusText.textContent = '{% trans "Waiting for players to join..." %}';
+                }
                 break;
                 
             case 'active':
