@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'img/family-chess-icon-transparent.png' %}">
     <title>{% block title %}{% trans "Family Chess" %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/chessboard-1.0.0.min.css' %}">
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
@@ -30,6 +31,9 @@
 <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
         <header class="mb-8 text-center">
+            <div class="flex justify-center items-center mb-2">
+                <img src="{% static 'img/family-chess-icon-transparent.png' %}" alt="Family Chess Logo" class="h-16 w-auto">
+            </div>
             <h1 class="text-3xl font-bold text-gray-800">{% trans "Family Chess" %}</h1>
             <div class="mt-2">
                 <a href="{% url 'home' %}" class="text-blue-600 hover:text-blue-800">{% trans "Home" %}</a>
