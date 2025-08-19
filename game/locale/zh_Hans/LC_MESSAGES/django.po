@@ -49,9 +49,9 @@ msgstr "家庭象棋"
 msgid "Home"
 msgstr "首页"
 
-#: game/templates/game/base.html:44
-msgid "Built for Deyu and LaoYe"
-msgstr "献给德于和老爷"
+#: game/templates/game/base.html:48
+msgid "Built for my family"
+msgstr "为我的家人制作"
 
 #: game/templates/game/game_room.html:5
 msgid "Chess Game"

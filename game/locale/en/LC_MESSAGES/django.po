@@ -53,6 +53,10 @@ msgstr ""
 msgid "Built with Django, Chess.js & Chessboard.js"
 msgstr ""
 
+#: game/templates/game/base.html:48
+msgid "Built for my family"
+msgstr "Built for my family"
+
 #: game/templates/game/game_room.html:5
 msgid "Chess Game"
 msgstr ""
