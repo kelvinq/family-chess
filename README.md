@@ -115,17 +115,6 @@ gunicorn family_chess.wsgi:application
 
 **Note**: For production use, PostgreSQL is recommended over SQLite for better concurrent performance.
 
-## Upcoming Features
-
-The following features are planned for future releases:
-
-- **Chat System**: In-game chat functionality for players
-- **Enhanced Spectator Features**: Improved spectator counting and interaction
-- **Game History**: Move replay and game analysis capabilities
-- **Game Timers**: Optional chess clocks for timed games
-- **Additional Themes**: More board and piece style options
-- **Performance Optimization**: Improved handling of concurrent users
-
 ## Security Features
 
 - **CSRF Protection**: All POST endpoints protected with Django CSRF tokens
