@@ -14,28 +14,24 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: game/models.py:23
-#, fuzzy
-#| msgid "Waiting for players..."
 msgid "Waiting for players"
-msgstr "等待玩家..."
+msgstr "正在等待其他玩家..."
 
 #: game/models.py:24
-#, fuzzy
-#| msgid "Game in progress..."
 msgid "Game in progress"
-msgstr "游戏进行中..."
+msgstr "对局正在进行中..."
 
 #: game/models.py:25
 msgid "Checkmate"
-msgstr ""
+msgstr "将杀"
 
 #: game/models.py:26
 msgid "Stalemate"
-msgstr ""
+msgstr "无子可动"
 
 #: game/models.py:27
 msgid "Draw"
-msgstr ""
+msgstr "和棋"
 
 #: game/models.py:28 game/templates/game/game_room.html:709
 msgid "Game abandoned"
@@ -55,7 +51,7 @@ msgstr "为我的家人制作"
 
 #: game/templates/game/game_room.html:5
 msgid "Chess Game"
-msgstr "国际象棋游戏"
+msgstr "国际象棋"
 
 #: game/templates/game/game_room.html:10
 msgid "Game"
@@ -64,6 +60,10 @@ msgstr "游戏"
 #: game/templates/game/game_room.html:13
 msgid "Share Link"
 msgstr "分享链接"
+
+#: game/templates/game/game_room.html:16
+msgid "Share this link with your opponent to start playing!"
+msgstr "分享此链接给对手即可开始对局！"
 
 #: game/templates/game/game_room.html:16
 msgid "Spectators"
@@ -97,17 +97,17 @@ msgstr "游戏状态"
 
 #: game/templates/game/game_room.html:64
 msgid "Waiting for players..."
-msgstr "等待玩家..."
+msgstr "正在等待其他玩家..."
 
 #: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
 #: game/templates/game/game_room.html:598
 #: game/templates/game/game_room.html:602
 msgid "Ready"
-msgstr "准备好了"
+msgstr "就绪"
 
 #: game/templates/game/game_room.html:72 game/templates/game/game_room.html:82
 msgid "Not Ready"
-msgstr "未准备好"
+msgstr "未就绪"
 
 #: game/templates/game/game_room.html:74 game/templates/game/game_room.html:84
 msgid "Waiting"
@@ -133,21 +133,21 @@ msgstr "游戏链接已复制到剪贴板！"
 
 #: game/templates/game/game_room.html:637
 msgid "White wins by checkmate!"
-msgstr "白方将死获胜！"
+msgstr "白方将杀取胜！"
 
 #: game/templates/game/game_room.html:639
 msgid "Black wins by checkmate!"
-msgstr "黑方将死获胜！"
+msgstr "黑方将杀取胜！"
 
 #: game/templates/game/game_room.html:641
 #: game/templates/game/game_room.html:705
 msgid "Game ends in a draw!"
-msgstr "游戏以平局结束！"
+msgstr "对局和棋！"
 
 #: game/templates/game/game_room.html:643
 #: game/templates/game/game_room.html:701
 msgid "Game ends in stalemate!"
-msgstr "游戏以僵局结束！"
+msgstr "对局和棋（无子可动）！"
 
 #: game/templates/game/game_room.html:663
 #: game/templates/game/game_room.html:673
@@ -156,7 +156,7 @@ msgstr "等待玩家准备好..."
 
 #: game/templates/game/game_room.html:665
 msgid "Game in progress..."
-msgstr "游戏进行中..."
+msgstr "对局正在进行中..."
 
 #: game/templates/game/game_room.html:681
 msgid "White to move"
@@ -172,7 +172,7 @@ msgstr "将军！"
 
 #: game/templates/game/game_room.html:697
 msgid "wins by checkmate!"
-msgstr "将死获胜！"
+msgstr "将杀取胜！"
 
 #: game/templates/game/game_room.html:713
 msgid "Game over"
@@ -240,14 +240,71 @@ msgstr "无效的移动"
 
 #: game/views.py:241
 msgid "Invalid request format"
-msgstr ""
+msgstr "请求格式无效"
 
 #: game/views.py:244
 msgid "Server error"
-msgstr ""
+msgstr "服务器错误"
 
-#~ msgid "Built with Django, Chess.js & Chessboard.js"
-#~ msgstr "使用 Django, Chess.js 和 Chessboard.js 构建"
+msgid "Reserved"
+msgstr "已选择"
 
-#~ msgid "Both colors are already taken"
-#~ msgstr "两种颜色都已被选择"
+msgid "Game Setup in Progress"
+msgstr "正在准备游戏"
+
+msgid "Both colors are reserved - waiting for players to confirm..."
+msgstr "双方已选好颜色 - 等待确认..."
+
+msgid "You'll be able to spectate when the game starts"
+msgstr "游戏开始后你就能观战啦"
+
+msgid "Spectator Mode"
+msgstr "观战模式"
+
+msgid "Watching the game"
+msgstr "正在观战"
+
+msgid "Choose your color to join the game"
+msgstr "选个颜色开始玩吧"
+
+msgid "Color reserved - click Ready to join"
+msgstr "颜色已选好 - 点击准备开始"
+
+msgid "Waiting for opponent to be ready..."
+msgstr "等待对手准备..."
+
+msgid "Both players ready - starting game..."
+msgstr "双方都准备好了 - 游戏马上开始..."
+
+msgid "Both players joined - waiting for ready confirmation..."
+msgstr "双方都来了 - 等待准备..."
+
+msgid "Waiting for second player to join..."
+msgstr "正在等待另一位玩家"
+
+msgid "Copy this game link:"
+msgstr "复制此游戏链接："
+
+msgid "You are ready as"
+msgstr "你已准备就绪，执"
+
+
+#: game/templates/game/game_room.html:1076
+msgid "White reserved (157s remaining)"
+msgstr "白方已选（还剩157秒）"
+
+msgid "Reservation expires in"
+msgstr "还剩下"
+
+msgid "Color Reserved: "
+msgstr "已选颜色："
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Waiting for White player..."
+msgstr "正在等待白方玩家..."
+
+msgid "Share the game link with your opponent"
+msgstr "给对手分享链接"
+

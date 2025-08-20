@@ -253,3 +253,6 @@ msgstr ""
 #: game/views.py:244
 msgid "Server error"
 msgstr ""
+
+msgid "Share the game link with your opponent"
+msgstr "Share the game link with your opponent"

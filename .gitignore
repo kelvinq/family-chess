@@ -6,3 +6,8 @@ db.sqlite3
 *.env
 # Ignore the directory  __pycache__ anywhere in the project
 __pycache__/
+# Ignore log files and directory
+logs/
+
+# Ignore compiled translation files
+*.mo

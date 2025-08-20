@@ -139,6 +139,29 @@ Tests cover:
 - Real-time features
 - Complete game workflows
 
+## Translations
+
+The game supports multiple languages with Django's translation system:
+- English (default)
+- Chinese (Simplified)
+
+### Managing Translations
+
+1. Update translation strings in the code:
+```bash
+python manage.py makemessages -l en  # For English
+python manage.py makemessages -l zh_Hans  # For Simplified Chinese
+```
+
+2. Edit translation files:
+- English: `game/locale/en/LC_MESSAGES/django.po`
+- Chinese: `game/locale/zh_Hans/LC_MESSAGES/django.po`
+
+3. Compile translations:
+```bash
+python manage.py compilemessages
+```
+
 ## Browser Compatibility
 
 Tested and supported on:
