@@ -116,7 +116,7 @@ msgstr "等待中"
 #: game/templates/game/game_room.html:93 game/templates/game/game_room.html:536
 #: game/templates/game/game_room.html:545
 msgid "I am Ready"
-msgstr "我准备好了"
+msgstr "我准备好啦！"
 
 #: game/templates/game/game_room.html:98
 msgid "You are watching as a spectator"
@@ -294,17 +294,29 @@ msgid "White reserved (157s remaining)"
 msgstr "白方已选（还剩157秒）"
 
 msgid "Reservation expires in"
-msgstr "还剩下"
+msgstr "还有"
 
 msgid "Color Reserved: "
-msgstr "已选颜色："
+msgstr "选好啦："
+
+msgid "Color Reserved:"
+msgstr "选好啦："
+
+msgid "Color Reserved"
+msgstr "选好啦："
 
 msgid "Cancel"
-msgstr "取消"
+msgstr "算啦"
 
 msgid "Waiting for White player..."
 msgstr "正在等待白方玩家..."
 
 msgid "Share the game link with your opponent"
-msgstr "给对手分享链接"
+msgstr "把链接分享给对手吧"
+
+msgid "I am Ready!"
+msgstr "我准备好啦！"
+
+msgid "Share this link with your opponent, then click Ready!"
+msgstr "分享链接给对手，然后点击准备开始！"
 

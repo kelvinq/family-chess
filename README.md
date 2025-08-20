@@ -57,63 +57,39 @@ Edit the `.env` file with your specific configuration:
 - `SECRET_KEY`: Django secret key
 - `DEBUG`: "True" for development, "False" for production
 - `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
+- `CSRF_TRUSTED_ORIGINS`: Comma-separated list of trusted origins with scheme (http:// or https://)
+
+For production deployment, make sure to:
+1. Set `DEBUG=False`
+2. Add your domain to `ALLOWED_HOSTS` (e.g., `family-chess.quee.org`)
+3. Add your domain with scheme to `CSRF_TRUSTED_ORIGINS` (e.g., `https://family-chess.quee.org`)
 
 5. Initialize the database
 ```bash
+# Create any pending migrations
+python manage.py makemigrations
+
+# Apply migrations to setup/update the database schema
 python manage.py migrate
 ```
+
+**Important**: Always run these migration commands after pulling updates from the repository, as the database schema may have been updated with new features or improvements.
 
 6. Compile translations (optional)
 ```bash
 python manage.py compilemessages
 ```
 
-7. Run tests (optional but recommended)
+If you get an error here regarding gettext, you need to run:
+
 ```bash
-python manage.py test
+apt-get update && apt-get install gettext
 ```
 
-8. Run the development server
+7. Run the development server
 ```bash
 python manage.py runserver
 ```
-
-## Production Deployment
-
-For production deployment, we provide an automated Apache setup. See `apache-deployment.md` for detailed instructions.
-
-### Quick Apache Deployment
-
-1. Update `.env` configuration:
-   - Set `DEBUG=False` 
-   - Generate a secure random `SECRET_KEY` (required - no default provided)
-   - Configure `ALLOWED_HOSTS` with your domain
-
-2. Run the automated deployment script:
-```bash
-sudo ./deploy-apache.sh
-```
-
-3. Obtain SSL certificates:
-```bash
-sudo certbot --apache -d your-domain.com
-```
-
-### Alternative WSGI Deployment
-
-For other WSGI servers like Gunicorn:
-
-1. Collect static files:
-```bash
-python manage.py collectstatic
-```
-
-2. Run with Gunicorn:
-```bash
-gunicorn family_chess.wsgi:application
-```
-
-**Note**: For production use, PostgreSQL is recommended over SQLite for better concurrent performance.
 
 ## Security Features
 
@@ -123,21 +99,6 @@ gunicorn family_chess.wsgi:application
 - **Session Security**: Secure session handling with production-grade cookies
 - **Connection Limits**: SSE connections auto-timeout to prevent resource exhaustion
 - **Security Headers**: Comprehensive security headers in production configuration
-
-## Testing
-
-Run the comprehensive test suite:
-
-```bash
-python manage.py test
-```
-
-Tests cover:
-- Chess engine validation
-- Game model functionality
-- API endpoint security
-- Real-time features
-- Complete game workflows
 
 ## Translations
 
@@ -160,6 +121,12 @@ python manage.py makemessages -l zh_Hans  # For Simplified Chinese
 3. Compile translations:
 ```bash
 python manage.py compilemessages
+```
+
+If you get an error here regarding gettext, you need to run:
+
+```bash
+apt-get update && apt-get install gettext
 ```
 
 ## Browser Compatibility

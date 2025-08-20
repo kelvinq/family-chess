@@ -58,7 +58,7 @@
     {% elif user_state == 'color_reserved' %}
     <div id="colorReserved" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow">
         <h3 class="text-lg font-medium text-blue-800 mb-3">
-            {% trans "Color Reserved" %}: 
+            {% trans "Color Reserved:" %} 
             <span class="font-bold">
                 {% if color_reserved == 'white' %}{% trans "White" %}{% else %}{% trans "Black" %}{% endif %}
             </span>
@@ -307,7 +307,7 @@
         const reservationHTML = `
             <div id="colorReserved" class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg shadow">
                 <h3 class="text-lg font-medium text-blue-800 mb-3">
-                    {% trans "Color Reserved" %}: 
+                    {% trans "Color Reserved:" %} 
                     <span class="font-bold">
                         ${color === 'white' ? '{% trans "White" %}' : '{% trans "Black" %}'}
                     </span>
