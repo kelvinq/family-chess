@@ -1,19 +1,33 @@
 # Family Chess
 
-A real-time online chess game built with Django, designed specifically for users in restrictive network environments. Whether you're in a LAN-only setting or behind strict firewalls (e.g., users in China), Family Chess enables seamless chess gameplay across network boundaries.
+A real-time online chess game built with Django, designed specifically for users in restrictive network environments with very different Internet culture from the rest-of-world (ROW). Whether you're in a LAN-only setting or behind strict firewalls (e.g., users in China), Family Chess enables instant, seamless chess gameplay across network and cultural boundaries.
+
+Live demo: https://family-chess.quee.org (Small 2GB VPS, please be gentle!)
 
 ## Key Features
 
 - **No Internet Dependency**: All assets (JS, CSS, images, sounds) are hosted locally
 - **No Login Required**: Quick access with shareable 8-digit game IDs
 - **Cross-Network Play**: Works reliably in restricted environments and within firewalls
-- **Color Selection**: First player chooses color, second player gets remaining color
-- **Ready-to-Play System**: Players indicate readiness before game starts
-- **Spectator Support**: Watch ongoing games without interfering
 - **Mobile-Friendly**: Responsive interface with click-to-move system
 - **Real-time Updates**: Using Server-Sent Events (SSE) for instant move synchronization
 - **Multilingual**: Full support for English and Chinese
-- **Interactive Feedback**: Visual and audio indicators for game events
+
+## Why?
+
+Both my 10 year old son living in Singapore and my father-in-law living in China loves chess. They would like to play chess, but there is no online chess platform that satisfies all of the following (ranked in terms of importance):
+
+* Reliably accessible from both China and ROW
+* Optimised for mobile-first
+* No login required
+
+|  | Rest-of-world Internet Users | Chinese Internet Users | Design |
+|--------|------------------------|-------------------------|---------------|
+| **Authentication** | Email-based accounts, usernames | WeChat ID, mobile phone numbers | No login required. Uses shareable game IDs (expressed as a 8 digit number) instead |
+| **CDN Access** | Global CDNs (jsdelivr, cdnjs) work reliably | Western CDNs blocked or unreliable | All assets served locally. No external dependencies |
+| **Network Environment** | Generally open internet access | Completely blocked or intermittent | Works behind firewalls - Optimized for restricted networks |
+| **Device Preference** | Desktop and mobile mix | Mobile-first usage patterns | Mobile-optimized UI - Touch-friendly interface design |
+| **Real-time Features** | WebSockets widely supported | WebSocket connections often blocked | Server-Sent Events (SSE) - More reliable than WebSockets |
 
 ## Technology Stack
 
@@ -132,9 +146,8 @@ apt-get update && apt-get install gettext
 ## Browser Compatibility
 
 Tested and supported on:
-- Chrome/Edge (latest 2 versions)
-- Firefox (latest 2 versions)
-- Safari (latest 2 versions)
+- Chrome/Edge
+- Safari
 - Mobile browsers: Chrome for Android, Safari for iOS
 
 ## License

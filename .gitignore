@@ -11,3 +11,7 @@ logs/
 
 # Ignore compiled translation files
 *.mo
+.DS_Store
+*.pyc
+venv/
+.venv/
