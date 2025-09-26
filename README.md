@@ -1,5 +1,8 @@
 # Family Chess
 
+[![Demo](https://img.youtube.com/vi/uJwXDwAAIps/0.jpg)](https://www.youtube.com/embed/uJwXDwAAIps?autoplay=1)
+
+
 A real-time online chess game built with Django, designed specifically for users in restrictive network environments with very different Internet culture from the rest-of-world (ROW). Whether you're in a LAN-only setting or behind strict firewalls (e.g., users in China), Family Chess enables instant, seamless chess gameplay across network and cultural boundaries.
 
 Live demo: https://family-chess.quee.org (Small 2GB VPS, please be gentle!)
